@@ -19,15 +19,10 @@ const Form = () => {
       vibe,
       photo: photo ? photo.name : null,
     };
-  
+
     window.Telegram.WebApp.sendData(JSON.stringify(formData));
     localStorage.setItem("user", JSON.stringify(formData));
-    window.location.href = "/profile"; // ❗️ Убираем close()
-  };
-  
-    window.Telegram.WebApp.sendData(JSON.stringify(formData));
-localStorage.setItem("user", JSON.stringify(formData));
-window.location.href = "/profile"; // остаёмся в WebApp
+    window.location.href = "/profile"; // WebApp остаётся открытым
   };
 
   const handlePhotoChange = (e) => {
@@ -69,30 +64,29 @@ window.location.href = "/profile"; // остаёмся в WebApp
         className="w-full mb-3 p-3 rounded-xl border border-gray-300"
       />
 
-<label className="block text-sm font-medium text-gray-700 mb-1">Цель встречи</label>
-<select
-  value={activity}
-  onChange={(e) => setActivity(e.target.value)}
-  className="w-full mb-3 p-3 rounded-xl border border-gray-300"
->
-  <option value="">Выбери цель</option>
-  <option value="Кофе">Кофе</option>
-  <option value="Прогулка">Прогулка</option>
-  <option value="Покурить">Покурить</option>
-</select>
+      <label className="block text-sm font-medium text-gray-700 mb-1">Цель встречи</label>
+      <select
+        value={activity}
+        onChange={(e) => setActivity(e.target.value)}
+        className="w-full mb-3 p-3 rounded-xl border border-gray-300"
+      >
+        <option value="">Выбери цель</option>
+        <option value="Кофе">Кофе</option>
+        <option value="Прогулка">Прогулка</option>
+        <option value="Покурить">Покурить</option>
+      </select>
 
-<label className="block text-sm font-medium text-gray-700 mb-1">Микро-настроение</label>
-<select
-  value={vibe}
-  onChange={(e) => setVibe(e.target.value)}
-  className="w-full mb-3 p-3 rounded-xl border border-gray-300"
->
-  <option value="">Выбери настроение</option>
-  <option value="Просто пройтись">Просто пройтись</option>
-  <option value="Поговорить">Поговорить</option>
-  <option value="Хочу активности">Хочу активности</option>
-</select>
-
+      <label className="block text-sm font-medium text-gray-700 mb-1">Микро-настроение</label>
+      <select
+        value={vibe}
+        onChange={(e) => setVibe(e.target.value)}
+        className="w-full mb-3 p-3 rounded-xl border border-gray-300"
+      >
+        <option value="">Выбери настроение</option>
+        <option value="Просто пройтись">Просто пройтись</option>
+        <option value="Поговорить">Поговорить</option>
+        <option value="Хочу активности">Хочу активности</option>
+      </select>
 
       <label className="block text-sm font-medium text-gray-700 mb-1">
         Фото профиля (необязательно)
@@ -119,6 +113,6 @@ window.location.href = "/profile"; // остаёмся в WebApp
       </button>
     </div>
   );
-
+};
 
 export default Form;

@@ -1,12 +1,4 @@
-import { useEffect } from "react";
-
-useEffect(() => {
-  if (window.Telegram.WebApp) {
-    window.Telegram.WebApp.ready();
-    window.Telegram.WebApp.setClosingBehavior({ need_confirmation: true });
-  }
-}, []);
-
+import { useState, useEffect } from "react";
 
 const Form = () => {
   const [name, setName] = useState("");
@@ -17,6 +9,14 @@ const Form = () => {
   const [vibe, setVibe] = useState("");
   const [photo, setPhoto] = useState(null);
 
+  useEffect(() => {
+    if (window.Telegram.WebApp) {
+      window.Telegram.WebApp.ready();
+      // ❗ только внутри компонента
+      // window.Telegram.WebApp.setClosingBehavior({ need_confirmation: true });
+    }
+  }, []);
+
   const handleSubmit = () => {
     const formData = {
       name,
@@ -25,19 +25,16 @@ const Form = () => {
       interests,
       activity,
       vibe,
-      photo: photo ? photo.name : null,
+      photo: photo ? URL.createObjectURL(photo) : null,
     };
-  
+
     console.log("👉 Данные для отправки:", formData);
-  
+
     window.Telegram.WebApp.sendData(JSON.stringify(formData));
     localStorage.setItem("user", JSON.stringify(formData));
     window.location.href = "/profile";
   };
-  
-  
-  
-  
+
   const handlePhotoChange = (e) => {
     setPhoto(e.target.files[0]);
   };

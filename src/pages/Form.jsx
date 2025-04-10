@@ -119,6 +119,6 @@ window.location.href = "/profile"; // остаёмся в WebApp
       </button>
     </div>
   );
-};
+
 
 export default Form;

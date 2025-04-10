@@ -20,13 +20,14 @@ const Form = () => {
       photo: photo ? photo.name : null,
     };
   
-    window.Telegram.WebApp.ready();
-    window.Telegram.WebApp.setClosingBehavior({ need_confirmation: true });
+    console.log("👉 Данные для отправки:", formData);
   
+    window.Telegram.WebApp.ready(); // только это ок!
     window.Telegram.WebApp.sendData(JSON.stringify(formData));
     localStorage.setItem("user", JSON.stringify(formData));
     window.location.href = "/profile";
   };
+  
   
   const handlePhotoChange = (e) => {
     setPhoto(e.target.files[0]);

@@ -19,9 +19,15 @@ const Form = () => {
       vibe,
       photo: photo ? photo.name : null,
     };
-
+  
     window.Telegram.WebApp.sendData(JSON.stringify(formData));
-    window.Telegram.WebApp.close();
+    localStorage.setItem("user", JSON.stringify(formData));
+    window.location.href = "/profile"; // ❗️ Убираем close()
+  };
+  
+    window.Telegram.WebApp.sendData(JSON.stringify(formData));
+localStorage.setItem("user", JSON.stringify(formData));
+window.location.href = "/profile"; // остаёмся в WebApp
   };
 
   const handlePhotoChange = (e) => {

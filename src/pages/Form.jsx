@@ -17,7 +17,7 @@ const Form = () => {
     }
   }, []);
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const formData = {
       name,
       address,
@@ -26,14 +26,27 @@ const Form = () => {
       activity,
       vibe,
       photo: photo ? URL.createObjectURL(photo) : null,
+      telegram_id: window.Telegram?.WebApp?.initDataUnsafe?.user?.id || null,
     };
-
-    console.log("👉 Данные для отправки:", formData);
-
-    window.Telegram.WebApp.sendData(JSON.stringify(formData));
+  
+    console.log("👉 Отправка анкеты:", formData);
+  
+    try {
+      await fetch("gulyai-backend-production.up.railway.app/api/form", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+    } catch (err) {
+      console.error("❌ Ошибка при отправке:", err);
+    }
+  
     localStorage.setItem("user", JSON.stringify(formData));
     window.location.href = "/profile";
   };
+  
 
   const handlePhotoChange = (e) => {
     setPhoto(e.target.files[0]);

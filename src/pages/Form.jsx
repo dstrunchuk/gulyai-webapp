@@ -2,17 +2,17 @@ import { useState } from "react";
 
 const Form = () => {
   const [name, setName] = useState("");
-  const [location, setLocation] = useState("");
+  const [address, setAddress] = useState("");
   const [age, setAge] = useState("");
   const [interests, setInterests] = useState("");
-  const [activity, setActivity] = useState("coffee");
-  const [vibe, setVibe] = useState("walk");
+  const [activity, setActivity] = useState("");
+  const [vibe, setVibe] = useState("");
   const [photo, setPhoto] = useState(null);
 
   const handleSubmit = () => {
     const formData = {
       name,
-      location,
+      address,
       age,
       interests,
       activity,
@@ -42,9 +42,9 @@ const Form = () => {
 
       <input
         type="text"
-        placeholder="Район / Город"
-        value={location}
-        onChange={(e) => setLocation(e.target.value)}
+        placeholder="Адрес (город, район, улица)"
+        value={address}
+        onChange={(e) => setAddress(e.target.value)}
         className="w-full mb-3 p-3 rounded-xl border border-gray-300"
       />
 
@@ -63,30 +63,24 @@ const Form = () => {
         className="w-full mb-3 p-3 rounded-xl border border-gray-300"
       />
 
-      <label className="block text-sm font-medium text-gray-700 mb-1">Цель встречи</label>
-      <select
+      <input
+        type="text"
+        placeholder="Цель встречи"
         value={activity}
         onChange={(e) => setActivity(e.target.value)}
         className="w-full mb-3 p-3 rounded-xl border border-gray-300"
-      >
-        <option value="coffee">Кофе</option>
-        <option value="walk">Прогулка</option>
-        <option value="smoke">Покурить</option>
-      </select>
+      />
 
-      <label className="block text-sm font-medium text-gray-700 mb-1">Микро-настроение</label>
-      <select
+      <input
+        type="text"
+        placeholder="Микро-настроение"
         value={vibe}
         onChange={(e) => setVibe(e.target.value)}
         className="w-full mb-3 p-3 rounded-xl border border-gray-300"
-      >
-        <option value="walk">Просто пройтись</option>
-        <option value="talk">Поговорить</option>
-        <option value="active">Хочу активности</option>
-      </select>
+      />
 
       <label className="block text-sm font-medium text-gray-700 mb-1">
-        Фото профиля 
+        Фото профиля (необязательно)
       </label>
       <input
         type="file"

@@ -22,11 +22,11 @@ const Form = () => {
   
     console.log("👉 Данные для отправки:", formData);
   
-    window.Telegram.WebApp.ready(); // только это ок!
-    window.Telegram.WebApp.sendData(JSON.stringify(formData));
+    window.Telegram.WebApp.sendData(JSON.stringify(formData)); // ✅
     localStorage.setItem("user", JSON.stringify(formData));
-    window.location.href = "/profile";
+    window.location.href = "/profile"; // ✅
   };
+  
   
   
   const handlePhotoChange = (e) => {

@@ -1,4 +1,12 @@
-import { useState } from "react";
+import { useEffect } from "react";
+
+useEffect(() => {
+  if (window.Telegram.WebApp) {
+    window.Telegram.WebApp.ready();
+    window.Telegram.WebApp.setClosingBehavior({ need_confirmation: true });
+  }
+}, []);
+
 
 const Form = () => {
   const [name, setName] = useState("");
@@ -22,10 +30,11 @@ const Form = () => {
   
     console.log("👉 Данные для отправки:", formData);
   
-    window.Telegram.WebApp.sendData(JSON.stringify(formData)); // ✅
+    window.Telegram.WebApp.sendData(JSON.stringify(formData));
     localStorage.setItem("user", JSON.stringify(formData));
-    window.location.href = "/profile"; // ✅
+    window.location.href = "/profile";
   };
+  
   
   
   

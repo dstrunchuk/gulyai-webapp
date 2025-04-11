@@ -38,6 +38,8 @@ const Form = () => {
 
   const handleSubmit = async () => {
     const photoBase64 = photo ? await toBase64(photo) : null;
+    console.log("📷 base64 длина:", photoBase64?.length);
+
 
     const formData = {
       name,

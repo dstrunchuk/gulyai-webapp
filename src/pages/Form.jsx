@@ -19,8 +19,14 @@ const Form = () => {
   }, []);
 
   const handlePhotoChange = (e) => {
-    setPhoto(e.target.files[0]);
+    const file = e.target.files[0];
+    if (file && file.size > 2 * 1024 * 1024) {
+      alert("⚠️ Файл слишком большой. Максимум 2MB.");
+      return;
+    }
+    setPhoto(file);
   };
+  
 
   const toBase64 = (file) =>
     new Promise((resolve, reject) => {

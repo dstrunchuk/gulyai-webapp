@@ -8,16 +8,31 @@ const Form = () => {
   const [activity, setActivity] = useState("");
   const [vibe, setVibe] = useState("");
   const [photo, setPhoto] = useState(null);
+  const [chatId, setChatId] = useState(null);
 
   useEffect(() => {
-    if (window.Telegram.WebApp) {
-      window.Telegram.WebApp.ready();
-      // ❗ только внутри компонента
-      // window.Telegram.WebApp.setClosingBehavior({ need_confirmation: true });
+    const tg = window.Telegram.WebApp;
+    if (tg?.initDataUnsafe?.user?.id) {
+      setChatId(tg.initDataUnsafe.user.id);
     }
+    tg.ready();
   }, []);
 
+  const handlePhotoChange = (e) => {
+    setPhoto(e.target.files[0]);
+  };
+
+  const toBase64 = (file) =>
+    new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = (error) => reject(error);
+    });
+
   const handleSubmit = async () => {
+    const photoBase64 = photo ? await toBase64(photo) : null;
+
     const formData = {
       name,
       address,
@@ -25,31 +40,23 @@ const Form = () => {
       interests,
       activity,
       vibe,
-      photo: photo ? URL.createObjectURL(photo) : null,
-      telegram_id: window.Telegram?.WebApp?.initDataUnsafe?.user?.id || null,
+      chat_id: chatId,
+      photo: photoBase64,
     };
-  
-    console.log("👉 Отправка анкеты:", formData);
-  
+
     try {
-      await fetch("gulyai-backend-production.up.railway.app/api/form", {
+      await fetch("https://gulyai-backend.up.railway.app/api/form", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
-    } catch (err) {
-      console.error("❌ Ошибка при отправке:", err);
-    }
-  
-    localStorage.setItem("user", JSON.stringify(formData));
-    window.location.href = "/profile";
-  };
-  
 
-  const handlePhotoChange = (e) => {
-    setPhoto(e.target.files[0]);
+      localStorage.setItem("user", JSON.stringify(formData));
+      window.location.href = "/profile";
+    } catch (err) {
+      alert("❌ Ошибка отправки анкеты.");
+      console.error(err);
+    }
   };
 
   return (

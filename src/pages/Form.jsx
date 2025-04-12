@@ -56,7 +56,7 @@ const Form = () => {
     };
 
     try {
-      await fetch("https://gulyai-backend-production.up.railway.app/api/form", {
+      await fetch("https://gulyai-backend.up.railway.app/api/form", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),

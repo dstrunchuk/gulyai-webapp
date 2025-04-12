@@ -60,7 +60,10 @@ const Form = () => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
+        mode: "cors",
+        credentials: "omit", // или попробуй "include" если есть куки
       });
+      
 
       localStorage.setItem("user", JSON.stringify(formData));
       window.location.href = "/profile";

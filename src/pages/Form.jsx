@@ -21,7 +21,7 @@ const Form = () => {
 
   const convertToJpeg = async (file) => {
     if (file.type === "image/heic" || file.name.toLowerCase().endsWith(".heic")) {
-      const blob = await heic2any({ blob: file, toType: "image/jpeg", quality: 0.8 });
+      const blob = await heic2any({ blob: file, toType: "image/jpeg", quality: 0.9 });
       return new File([blob], file.name.replace(/\.heic$/i, ".jpg"), { type: "image/jpeg" });
     }
     return file;
@@ -42,7 +42,9 @@ const Form = () => {
     formData.append("activity", activity);
     formData.append("vibe", vibe);
     formData.append("chat_id", chatId);
-    if (photo) formData.append("photo", photo);
+    if (photo) {
+      formData.append("photo", photo);
+    }
 
     try {
       await fetch("https://gulyai-backend-production.up.railway.app/api/form", {
@@ -50,10 +52,10 @@ const Form = () => {
         body: formData,
       });
 
-      localStorage.setItem("user", JSON.stringify(Object.fromEntries(formData)));
+      localStorage.setItem("user", JSON.stringify(Object.fromEntries(formData.entries())));
       window.location.href = "/profile";
     } catch (err) {
-      alert("❌ Ошибка при отправке анкеты.");
+      alert("❌ Ошибка отправки анкеты.");
       console.error(err);
     }
   };
@@ -117,14 +119,12 @@ const Form = () => {
         <option value="Хочу активности">Хочу активности</option>
       </select>
 
-      <label className="block text-sm font-medium text-gray-700 mb-1">
-        Фото профиля (необязательно)
-      </label>
+      <label className="block text-sm font-medium text-gray-700 mb-1">Фото профиля</label>
       <input
         type="file"
         accept="image/*,.heic"
         onChange={handlePhotoChange}
-        className="mb-4 w-full border border-gray-300 rounded-xl p-2 bg-white shadow-sm"
+        className="mb-4 w-full border border-gray-300 rounded-xl p-2 bg-white shadow-sm file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
       />
       {photo && (
         <img

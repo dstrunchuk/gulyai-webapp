@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 const Form = () => {
   const [stage, setStage] = useState("intro"); // intro | loading | failed | form
   const [chatId, setChatId] = useState(null);
+  const [submitting, setSubmitting] = useState(false);
 
   const [name, setName] = useState("");
   const [address, setAddress] = useState("");
@@ -14,7 +15,6 @@ const Form = () => {
   const [vibe, setVibe] = useState("");
   const [photo, setPhoto] = useState(null);
 
-  // Try to get Telegram ID
   useEffect(() => {
     if (stage !== "loading") return;
 
@@ -49,6 +49,8 @@ const Form = () => {
   };
 
   const handleSubmit = async () => {
+    setSubmitting(true);
+
     const formData = new FormData();
     formData.append("name", name);
     formData.append("address", address);
@@ -74,6 +76,7 @@ const Form = () => {
     } catch (err) {
       alert("❌ Ошибка отправки анкеты.");
       console.error(err);
+      setSubmitting(false);
     }
   };
 
@@ -199,9 +202,12 @@ const Form = () => {
 
       <button
         onClick={handleSubmit}
-        className="w-full bg-white text-black py-3 rounded-xl font-bold hover:bg-gray-300 transition"
+        disabled={submitting}
+        className={`w-full py-3 rounded-xl font-bold transition ${
+          submitting ? "bg-gray-500 text-white" : "bg-white text-black hover:bg-gray-300"
+        }`}
       >
-        🚀 ГУЛЯТЬ
+        {submitting ? "⏳ Загрузка..." : "🚀 ГУЛЯТЬ"}
       </button>
     </div>
   );

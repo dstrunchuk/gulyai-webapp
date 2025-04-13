@@ -45,17 +45,17 @@ const Form = () => {
     formData.append("vibe", vibe);
     formData.append("chat_id", chatId);
     if (photo) formData.append("photo", photo);
-
+  
     try {
-      await fetch("https://gulyai-backend-production.up.railway.app/api/form", {
+      const response = await fetch("https://gulyai-backend-production.up.railway.app/api/form", {
         method: "POST",
         body: formData,
       });
       const result = await response.json();
-
+  
       const profileData = Object.fromEntries(formData.entries());
-      profileData.photo_url = result.photo_url; // добавим в localStorage
-
+      profileData.photo_url = result.photo_url;
+  
       localStorage.setItem("user", JSON.stringify(profileData));
       window.location.href = "/profile";
     } catch (err) {
@@ -63,7 +63,6 @@ const Form = () => {
       console.error(err);
     }
   };
-
   if (showIntro) {
     return (
       <motion.div

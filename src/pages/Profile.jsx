@@ -4,51 +4,55 @@ const Profile = () => {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
-    const savedUser = localStorage.getItem("user");
-    if (savedUser) {
-      setUser(JSON.parse(savedUser));
+    const data = localStorage.getItem("user");
+    if (data) {
+      setUser(JSON.parse(data));
     }
   }, []);
 
   if (!user) {
-    return <p className="text-center mt-8">Анкета не найдена</p>;
+    return <div className="text-center text-gray-500 p-8">Загрузка профиля...</div>;
   }
 
   return (
-    <div className="max-w-md mx-auto mt-10 p-6 rounded-2xl shadow-lg bg-white text-center">
-      {user.photo_url ? (
-        <img
-          src={user.photo_url}
-          alt="Фото профиля"
-          className="w-32 h-32 object-cover rounded-full mx-auto mb-4 border"
-        />
-      ) : (
-        <div className="w-32 h-32 bg-gray-200 rounded-full mx-auto mb-4 flex items-center justify-center text-gray-500 text-3xl">
-          😊
+    <div className="min-h-screen bg-gradient-to-br from-white via-gray-50 to-gray-100 p-6">
+      <div className="max-w-2xl mx-auto bg-white shadow-2xl rounded-2xl p-8">
+        <h1 className="text-3xl font-bold text-center text-gray-900 mb-6">Мой профиль</h1>
+
+        {user.photo && (
+          <img
+            src={user.photo}
+            alt="Фото"
+            className="mx-auto mb-6 w-32 h-32 object-cover rounded-full border border-gray-300 shadow-md"
+          />
+        )}
+
+        <div className="space-y-4 text-gray-700">
+          <p><strong>Имя:</strong> {user.name}</p>
+          <p><strong>Адрес:</strong> {user.address}</p>
+          <p><strong>Возраст:</strong> {user.age}</p>
+          <p><strong>Интересы:</strong> {user.interests}</p>
+          <p><strong>Цель встречи:</strong> {user.activity}</p>
+          <p><strong>Микро-настроение:</strong> {user.vibe}</p>
         </div>
-      )}
-  
-      <h2 className="text-2xl font-bold mb-1">{user.name || "—"}</h2>
-      <p className="text-gray-500 mb-4">{user.age ? `${user.age} лет` : "Возраст не указан"}</p>
-  
-      <p className="mb-2 text-left">
-        📍 <strong>Адрес:</strong> {user.address || "—"}
-      </p>
-      <p className="mb-2 text-left">
-        🎯 <strong>Цель встречи:</strong> {user.activity || "—"}
-      </p>
-      <p className="mb-2 text-left">
-        💬 <strong>Настроение:</strong> {user.vibe || "—"}
-      </p>
-      <p className="mb-4 text-left">
-        🔥 <strong>Интересы:</strong> {user.interests || "—"}
-      </p>
-  
-      <button className="w-full bg-blue-600 text-white py-3 rounded-xl font-bold hover:bg-blue-700 transition">
-        👥 Смотреть людей рядом
-      </button>
+
+        <div className="mt-8 flex justify-center space-x-4">
+          <button className="bg-blue-500 text-white px-4 py-2 rounded-xl hover:bg-blue-600 transition">
+            Сменить цель
+          </button>
+          <button className="bg-yellow-500 text-white px-4 py-2 rounded-xl hover:bg-yellow-600 transition">
+            Сменить статус
+          </button>
+        </div>
+
+        <div className="mt-10 text-center">
+          <button className="bg-green-600 text-white px-6 py-3 rounded-2xl text-lg font-semibold hover:bg-green-700 transition">
+            Смотреть людей рядом
+          </button>
+        </div>
+      </div>
     </div>
-  );  
+  );
 };
 
 export default Profile;

@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 import heic2any from "heic2any";
+import { motion } from "framer-motion";
 
 const Form = () => {
   const [showIntro, setShowIntro] = useState(true);
-  const [fade, setFade] = useState(false);
   const [name, setName] = useState("");
   const [address, setAddress] = useState("");
   const [age, setAge] = useState("");
@@ -19,9 +19,6 @@ const Form = () => {
       setChatId(tg.initDataUnsafe.user.id);
     }
     tg.ready();
-
-    const timer = setTimeout(() => setFade(true), 50);
-    return () => clearTimeout(timer);
   }, []);
 
   const convertToJpeg = async (file) => {
@@ -47,9 +44,7 @@ const Form = () => {
     formData.append("activity", activity);
     formData.append("vibe", vibe);
     formData.append("chat_id", chatId);
-    if (photo) {
-      formData.append("photo", photo);
-    }
+    if (photo) formData.append("photo", photo);
 
     try {
       await fetch("https://gulyai-backend-production.up.railway.app/api/form", {
@@ -57,16 +52,8 @@ const Form = () => {
         body: formData,
       });
 
-      localStorage.setItem("user", JSON.stringify({
-        name,
-        address,
-        age,
-        interests,
-        activity,
-        vibe,
-        photo: photo ? URL.createObjectURL(photo) : null,
-      }));
-
+      const profileData = Object.fromEntries(formData.entries());
+      localStorage.setItem("user", JSON.stringify(profileData));
       window.location.href = "/profile";
     } catch (err) {
       alert("❌ Ошибка отправки анкеты.");
@@ -76,32 +63,38 @@ const Form = () => {
 
   if (showIntro) {
     return (
-      <div className={`transition-all duration-700 ease-in-out transform ${
-        fade ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
-      } flex flex-col items-center justify-center h-screen text-center px-6 bg-white`}>
-        <h1 className="text-2xl font-bold mb-4 text-gray-800">Мы не публикуем анкеты</h1>
-        <p className="text-gray-600 mb-2">Никто не увидит тебя, если ты не хочешь</p>
-        <p className="text-gray-600 mb-8">Ты сам выбираешь, с кем говорить</p>
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+        className="min-h-screen flex flex-col justify-center items-center px-6 bg-[#1c1c1e] text-white"
+      >
+        <h1 className="text-3xl font-bold mb-6">Перед тем как начать</h1>
+        <ul className="text-lg space-y-3 text-center">
+          <li>Мы не публикуем анкеты</li>
+          <li>Никто не увидит тебя, если ты не хочешь</li>
+          <li>Ты сам выбираешь, с кем говорить</li>
+        </ul>
         <button
           onClick={() => setShowIntro(false)}
-          className="bg-green-600 text-white px-8 py-3 rounded-2xl shadow-xl font-semibold hover:bg-green-700 transition"
+          className="mt-8 bg-white text-black font-bold py-2 px-6 rounded-xl hover:bg-gray-200"
         >
           Далее
         </button>
-      </div>
+      </motion.div>
     );
   }
 
   return (
-    <div className="max-w-xl mx-auto p-6 bg-white rounded-xl shadow-xl mt-8 animate-fade-in">
-      <h1 className="text-3xl font-bold mb-6 text-gray-900">Заполни анкету</h1>
+    <div className="max-w-xl mx-auto p-4 bg-[#1c1c1e] text-white min-h-screen">
+      <h1 className="text-2xl font-bold mb-4">Заполни анкету</h1>
 
       <input
         type="text"
         placeholder="Имя"
         value={name}
         onChange={(e) => setName(e.target.value)}
-        className="w-full mb-4 p-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-green-500"
+        className="w-full mb-3 p-3 rounded-xl border border-gray-600 bg-[#2c2c2e]"
       />
 
       <input
@@ -109,7 +102,7 @@ const Form = () => {
         placeholder="Адрес (город, район, улица)"
         value={address}
         onChange={(e) => setAddress(e.target.value)}
-        className="w-full mb-4 p-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-green-500"
+        className="w-full mb-3 p-3 rounded-xl border border-gray-600 bg-[#2c2c2e]"
       />
 
       <input
@@ -117,21 +110,21 @@ const Form = () => {
         placeholder="Возраст"
         value={age}
         onChange={(e) => setAge(e.target.value)}
-        className="w-full mb-4 p-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-green-500"
+        className="w-full mb-3 p-3 rounded-xl border border-gray-600 bg-[#2c2c2e]"
       />
 
       <textarea
         placeholder="Интересы"
         value={interests}
         onChange={(e) => setInterests(e.target.value)}
-        className="w-full mb-4 p-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-green-500"
+        className="w-full mb-3 p-3 rounded-xl border border-gray-600 bg-[#2c2c2e]"
       />
 
-      <label className="block text-sm font-medium text-gray-700 mb-1">Цель встречи</label>
+      <label className="block text-sm mb-1">Цель встречи</label>
       <select
         value={activity}
         onChange={(e) => setActivity(e.target.value)}
-        className="w-full mb-4 p-3 rounded-xl border border-gray-300"
+        className="w-full mb-3 p-3 rounded-xl border border-gray-600 bg-[#2c2c2e]"
       >
         <option value="">Выбери цель</option>
         <option value="Кофе">Кофе</option>
@@ -139,11 +132,11 @@ const Form = () => {
         <option value="Покурить">Покурить</option>
       </select>
 
-      <label className="block text-sm font-medium text-gray-700 mb-1">Микро-настроение</label>
+      <label className="block text-sm mb-1">Микро-настроение</label>
       <select
         value={vibe}
         onChange={(e) => setVibe(e.target.value)}
-        className="w-full mb-4 p-3 rounded-xl border border-gray-300"
+        className="w-full mb-3 p-3 rounded-xl border border-gray-600 bg-[#2c2c2e]"
       >
         <option value="">Выбери настроение</option>
         <option value="Просто пройтись">Просто пройтись</option>
@@ -151,24 +144,24 @@ const Form = () => {
         <option value="Хочу активности">Хочу активности</option>
       </select>
 
-      <label className="block text-sm font-medium text-gray-700 mb-1">Фото профиля (необязательно)</label>
+      <label className="block text-sm mb-1">Фото профиля</label>
       <input
         type="file"
         accept="image/*,.heic"
         onChange={handlePhotoChange}
-        className="mb-4 w-full border border-gray-300 rounded-xl p-2 bg-white shadow-sm file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+        className="mb-4 w-full text-white file:bg-gray-700 file:text-white file:rounded-xl file:px-4 file:py-2 border border-gray-600 bg-[#2c2c2e]"
       />
       {photo && (
         <img
           src={URL.createObjectURL(photo)}
           alt="Фото"
-          className="mb-4 w-32 h-32 object-cover rounded-xl border"
+          className="mb-4 w-32 h-32 object-cover rounded-xl border border-gray-700"
         />
       )}
 
       <button
         onClick={handleSubmit}
-        className="w-full bg-green-600 text-white py-3 rounded-xl font-bold hover:bg-green-700 transition shadow-lg"
+        className="w-full bg-white text-black py-3 rounded-xl font-bold hover:bg-gray-300 transition"
       >
         🚀 ГУЛЯТЬ
       </button>

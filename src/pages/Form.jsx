@@ -32,21 +32,33 @@ const Form = () => {
     formData.append("vibe", vibe);
     formData.append("chat_id", chatId);
     if (photo) formData.append("photo", photo);
-
+  
     try {
-      const response = await fetch("https://gulyai-backend-production.up.railway.app/api/form", {
+      const res = await fetch("https://gulyai-backend-production.up.railway.app/api/form", {
         method: "POST",
         body: formData,
       });
-
-      const result = await response.json();
-      localStorage.setItem("user", JSON.stringify(result));
+  
+      const result = await res.json();
+      const fullUserData = {
+        name,
+        address,
+        age,
+        interests,
+        activity,
+        vibe,
+        chat_id: chatId,
+        photo_url: result.photo_url || null,
+      };
+  
+      localStorage.setItem("user", JSON.stringify(fullUserData));
       window.location.href = "/profile";
     } catch (err) {
-      alert("❌ Ошибка отправки анкеты");
-      console.error(err);
+      console.error("Ошибка отправки анкеты:", err);
+      alert("Ошибка при отправке. Попробуйте ещё раз.");
     }
   };
+  
 
   return (
     <div className="max-w-xl mx-auto p-4">

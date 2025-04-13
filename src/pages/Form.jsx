@@ -12,7 +12,9 @@ const Form = () => {
   const [vibe, setVibe] = useState("");
   const [photo, setPhoto] = useState(null);
   const [chatId, setChatId] = useState(null);
+  const [loading, setLoading] = useState(false);
 
+  // Получаем chat_id безопасно
   useEffect(() => {
     const tg = window.Telegram.WebApp;
     tg.ready();
@@ -21,7 +23,7 @@ const Form = () => {
         setChatId(tg.initDataUnsafe.user.id);
         clearInterval(interval);
       }
-    }, 300);
+    }, 500);
     return () => clearInterval(interval);
   }, []);
 
@@ -44,6 +46,8 @@ const Form = () => {
       alert("Telegram ID ещё не загружен. Попробуйте через пару секунд.");
       return;
     }
+
+    setLoading(true);
 
     const formData = new FormData();
     formData.append("name", name);
@@ -70,6 +74,8 @@ const Form = () => {
     } catch (err) {
       alert("❌ Ошибка отправки анкеты.");
       console.error(err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -174,9 +180,14 @@ const Form = () => {
 
       <button
         onClick={handleSubmit}
-        className="w-full bg-white text-black py-3 rounded-xl font-bold hover:bg-gray-300 transition"
+        disabled={loading}
+        className={`w-full py-3 rounded-xl font-bold transition ${
+          loading
+            ? "bg-gray-400 text-white cursor-not-allowed"
+            : "bg-white text-black hover:bg-gray-300"
+        }`}
       >
-        🚀 ГУЛЯТЬ
+        🚀 {loading ? "Отправка..." : "ГУЛЯТЬ"}
       </button>
     </div>
   );

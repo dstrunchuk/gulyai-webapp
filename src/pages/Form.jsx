@@ -4,6 +4,9 @@ import { motion } from "framer-motion";
 
 const Form = () => {
   const [showIntro, setShowIntro] = useState(true);
+  const [chatId, setChatId] = useState(null);
+  const [loadingId, setLoadingId] = useState(true);
+
   const [name, setName] = useState("");
   const [address, setAddress] = useState("");
   const [age, setAge] = useState("");
@@ -11,15 +14,21 @@ const Form = () => {
   const [activity, setActivity] = useState("");
   const [vibe, setVibe] = useState("");
   const [photo, setPhoto] = useState(null);
-  const [chatId, setChatId] = useState(null);
-  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const tg = window.Telegram?.WebApp;
-    if (tg?.initDataUnsafe?.user?.id) {
-      setChatId(tg.initDataUnsafe.user.id);
-    }
     tg?.ready?.();
+
+    const interval = setInterval(() => {
+      const id = tg?.initDataUnsafe?.user?.id;
+      if (id) {
+        setChatId(id);
+        setLoadingId(false);
+        clearInterval(interval);
+      }
+    }, 300);
+
+    return () => clearInterval(interval);
   }, []);
 
   const convertToJpeg = async (file) => {
@@ -37,12 +46,6 @@ const Form = () => {
   };
 
   const handleSubmit = async () => {
-    if (!chatId) {
-      alert("❗ Не удалось получить Telegram ID. Перезапусти приложение.");
-      return;
-    }
-
-    setLoading(true);
     const formData = new FormData();
     formData.append("name", name);
     formData.append("address", address);
@@ -54,12 +57,12 @@ const Form = () => {
     if (photo) formData.append("photo", photo);
 
     try {
-      const response = await fetch("https://gulyai-backend-production.up.railway.app/api/form", {
+      const res = await fetch("https://gulyai-backend-production.up.railway.app/api/form", {
         method: "POST",
         body: formData,
       });
+      const result = await res.json();
 
-      const result = await response.json();
       const profileData = Object.fromEntries(formData.entries());
       profileData.photo_url = result.photo_url;
 
@@ -68,8 +71,6 @@ const Form = () => {
     } catch (err) {
       alert("❌ Ошибка отправки анкеты.");
       console.error(err);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -78,7 +79,6 @@ const Form = () => {
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -30 }}
         transition={{ duration: 0.6 }}
         className="min-h-screen flex flex-col justify-center items-center px-6 bg-[#1c1c1e] text-white"
       >
@@ -95,6 +95,15 @@ const Form = () => {
           Далее
         </button>
       </motion.div>
+    );
+  }
+
+  if (loadingId) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen bg-[#1c1c1e] text-white text-center px-6">
+        <p className="text-lg mb-2">⏳ Загружаем Telegram ID...</p>
+        <p className="text-sm text-gray-400">Если не загружается — перезапусти WebApp</p>
+      </div>
     );
   }
 
@@ -174,12 +183,12 @@ const Form = () => {
 
       <button
         onClick={handleSubmit}
-        disabled={loading}
         className={`w-full py-3 rounded-xl font-bold transition ${
-          loading ? 'bg-gray-500 text-white cursor-not-allowed' : 'bg-white text-black hover:bg-gray-300'
+          !chatId ? "bg-gray-400 cursor-not-allowed" : "bg-white text-black hover:bg-gray-300"
         }`}
+        disabled={!chatId}
       >
-        {loading ? "Загрузка..." : "🚀 ГУЛЯТЬ"}
+        🚀 ГУЛЯТЬ
       </button>
     </div>
   );

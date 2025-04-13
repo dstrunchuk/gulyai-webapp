@@ -15,10 +15,11 @@ const Form = () => {
 
   useEffect(() => {
     const tg = window.Telegram.WebApp;
-    if (tg?.initDataUnsafe?.user?.id) {
-      setChatId(tg.initDataUnsafe.user.id);
+    tg.ready(); // переместили выше
+    const id = tg?.initDataUnsafe?.user?.id;
+    if (id) {
+      setChatId(id);
     }
-    tg.ready();
   }, []);
 
   const convertToJpeg = async (file) => {
@@ -36,6 +37,11 @@ const Form = () => {
   };
 
   const handleSubmit = async () => {
+    if (!chatId) {
+      alert("Telegram ID ещё не загружен. Попробуйте через пару секунд.");
+      return;
+    }
+
     const formData = new FormData();
     formData.append("name", name);
     formData.append("address", address);
@@ -45,17 +51,17 @@ const Form = () => {
     formData.append("vibe", vibe);
     formData.append("chat_id", chatId);
     if (photo) formData.append("photo", photo);
-  
+
     try {
       const response = await fetch("https://gulyai-backend-production.up.railway.app/api/form", {
         method: "POST",
         body: formData,
       });
+
       const result = await response.json();
-  
       const profileData = Object.fromEntries(formData.entries());
       profileData.photo_url = result.photo_url;
-  
+
       localStorage.setItem("user", JSON.stringify(profileData));
       window.location.href = "/profile";
     } catch (err) {
@@ -63,6 +69,7 @@ const Form = () => {
       console.error(err);
     }
   };
+
   if (showIntro) {
     return (
       <motion.div

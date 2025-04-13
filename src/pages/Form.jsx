@@ -1,3 +1,5 @@
+const [idLoading, setIdLoading] = useState(true);
+const [idFailed, setIdFailed] = useState(false);
 import { useState, useEffect } from "react";
 import heic2any from "heic2any";
 import { motion } from "framer-motion";
@@ -17,18 +19,23 @@ const Form = () => {
 
   useEffect(() => {
     const tg = window.Telegram?.WebApp;
-    tg?.ready?.();
-
-    const interval = setInterval(() => {
-      const id = tg?.initDataUnsafe?.user?.id;
-      if (id) {
-        setChatId(id);
-        setLoadingId(false);
-        clearInterval(interval);
-      }
-    }, 300);
-
-    return () => clearInterval(interval);
+    const userId = tg?.initDataUnsafe?.user?.id;
+  
+    if (userId) {
+      setChatId(userId);
+      setIdLoading(false);
+    } else {
+      const timeout = setTimeout(() => {
+        if (!chatId) {
+          setIdFailed(true);
+          setIdLoading(false);
+        }
+      }, 5000); // 5 секунд на загрузку
+  
+      return () => clearTimeout(timeout);
+    }
+  
+    tg?.ready();
   }, []);
 
   const convertToJpeg = async (file) => {
@@ -98,11 +105,19 @@ const Form = () => {
     );
   }
 
-  if (loadingId) {
+  if (idFailed) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-[#1c1c1e] text-white text-center px-6">
-        <p className="text-lg mb-2">⏳ Загружаем Telegram ID...</p>
-        <p className="text-sm text-gray-400">Если не загружается — перезапусти WebApp</p>
+      <div className="min-h-screen flex flex-col justify-center items-center bg-black text-white px-6 text-center">
+        <p className="text-xl mb-4">⚠️ Не удалось загрузить Telegram ID</p>
+        <p className="text-sm text-gray-400 mb-6">
+          Пожалуйста, закрой и открой мини-приложение заново через Telegram
+        </p>
+        <button
+          className="bg-white text-black px-6 py-2 rounded-xl"
+          onClick={() => window.Telegram?.WebApp?.close()}
+        >
+          Закрыть
+        </button>
       </div>
     );
   }

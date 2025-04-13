@@ -12,31 +12,14 @@ const Form = () => {
   const [vibe, setVibe] = useState("");
   const [photo, setPhoto] = useState(null);
   const [chatId, setChatId] = useState(null);
-  const [loadingId, setLoadingId] = useState(true);
 
   useEffect(() => {
     const tg = window.Telegram.WebApp;
+    if (tg?.initDataUnsafe?.user?.id) {
+      setChatId(tg.initDataUnsafe.user.id);
+      console.log("Telegram chat ID:", tg.initDataUnsafe.user.id);
+    }
     tg.ready();
-
-    let attempts = 0;
-    const maxAttempts = 10;
-
-    const interval = setInterval(() => {
-      const id = tg?.initDataUnsafe?.user?.id;
-      if (id) {
-        setChatId(id);
-        setLoadingId(false);
-        clearInterval(interval);
-      } else {
-        attempts++;
-        if (attempts >= maxAttempts) {
-          setLoadingId(false);
-          clearInterval(interval);
-        }
-      }
-    }, 500);
-
-    return () => clearInterval(interval);
   }, []);
 
   const convertToJpeg = async (file) => {
@@ -54,11 +37,6 @@ const Form = () => {
   };
 
   const handleSubmit = async () => {
-    if (!chatId) {
-      alert("Telegram ID ещё не загружен. Попробуйте через пару секунд.");
-      return;
-    }
-
     const formData = new FormData();
     formData.append("name", name);
     formData.append("address", address);
@@ -74,8 +52,8 @@ const Form = () => {
         method: "POST",
         body: formData,
       });
-
       const result = await response.json();
+
       const profileData = Object.fromEntries(formData.entries());
       profileData.photo_url = result.photo_url;
 
@@ -186,15 +164,15 @@ const Form = () => {
       )}
 
       <button
+        disabled={!(Number(chatId) > 0)}
         onClick={handleSubmit}
-        disabled={!chatId || loadingId}
         className={`w-full py-3 rounded-xl font-bold transition ${
-          !chatId || loadingId
-            ? "bg-gray-500 text-white cursor-not-allowed"
-            : "bg-white text-black hover:bg-gray-300"
+          Number(chatId) > 0
+            ? "bg-white text-black hover:bg-gray-300"
+            : "bg-gray-600 text-gray-300 cursor-not-allowed"
         }`}
       >
-        {loadingId ? "⏳ Загрузка Telegram ID..." : "🚀 ГУЛЯТЬ"}
+        {Number(chatId) > 0 ? "🚀 ГУЛЯТЬ" : "Загрузка..."}
       </button>
     </div>
   );

@@ -12,18 +12,30 @@ const Form = () => {
   const [vibe, setVibe] = useState("");
   const [photo, setPhoto] = useState(null);
   const [chatId, setChatId] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [loadingId, setLoadingId] = useState(true);
 
-  // Получаем chat_id безопасно
   useEffect(() => {
     const tg = window.Telegram.WebApp;
     tg.ready();
+
+    let attempts = 0;
+    const maxAttempts = 10;
+
     const interval = setInterval(() => {
-      if (tg?.initDataUnsafe?.user?.id) {
-        setChatId(tg.initDataUnsafe.user.id);
+      const id = tg?.initDataUnsafe?.user?.id;
+      if (id) {
+        setChatId(id);
+        setLoadingId(false);
         clearInterval(interval);
+      } else {
+        attempts++;
+        if (attempts >= maxAttempts) {
+          setLoadingId(false);
+          clearInterval(interval);
+        }
       }
     }, 500);
+
     return () => clearInterval(interval);
   }, []);
 
@@ -46,8 +58,6 @@ const Form = () => {
       alert("Telegram ID ещё не загружен. Попробуйте через пару секунд.");
       return;
     }
-
-    setLoading(true);
 
     const formData = new FormData();
     formData.append("name", name);
@@ -74,8 +84,6 @@ const Form = () => {
     } catch (err) {
       alert("❌ Ошибка отправки анкеты.");
       console.error(err);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -84,7 +92,6 @@ const Form = () => {
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -30 }}
         transition={{ duration: 0.6 }}
         className="min-h-screen flex flex-col justify-center items-center px-6 bg-[#1c1c1e] text-white"
       >
@@ -180,14 +187,14 @@ const Form = () => {
 
       <button
         onClick={handleSubmit}
-        disabled={loading}
+        disabled={!chatId || loadingId}
         className={`w-full py-3 rounded-xl font-bold transition ${
-          loading
-            ? "bg-gray-400 text-white cursor-not-allowed"
+          !chatId || loadingId
+            ? "bg-gray-500 text-white cursor-not-allowed"
             : "bg-white text-black hover:bg-gray-300"
         }`}
       >
-        🚀 {loading ? "Отправка..." : "ГУЛЯТЬ"}
+        {loadingId ? "⏳ Загрузка Telegram ID..." : "🚀 ГУЛЯТЬ"}
       </button>
     </div>
   );

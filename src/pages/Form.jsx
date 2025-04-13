@@ -1,8 +1,10 @@
 import { useState, useEffect } from "react";
 import heic2any from "heic2any";
 import { motion } from "framer-motion";
+import { useState, useEffect } from "react";
 
 const Form = () => {
+  const [idLoading, setIdLoading] = useState(true);
   const [showIntro, setShowIntro] = useState(true);
   const [chatId, setChatId] = useState(null);
   const [loadingId, setLoadingId] = useState(true);

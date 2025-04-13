@@ -3,6 +3,7 @@ import heic2any from "heic2any";
 
 const Form = () => {
   const [showIntro, setShowIntro] = useState(true);
+  const [fade, setFade] = useState(false);
   const [name, setName] = useState("");
   const [address, setAddress] = useState("");
   const [age, setAge] = useState("");
@@ -18,6 +19,9 @@ const Form = () => {
       setChatId(tg.initDataUnsafe.user.id);
     }
     tg.ready();
+
+    const timer = setTimeout(() => setFade(true), 50);
+    return () => clearTimeout(timer);
   }, []);
 
   const convertToJpeg = async (file) => {
@@ -72,13 +76,15 @@ const Form = () => {
 
   if (showIntro) {
     return (
-      <div className="p-6 text-center animate-fade-in">
-        <h1 className="text-xl font-bold mb-4">Мы не публикуем анкеты</h1>
-        <p className="mb-2">Никто не увидит тебя, если ты не хочешь</p>
-        <p className="mb-6">Ты сам выбираешь, с кем говорить</p>
+      <div className={`transition-all duration-700 ease-in-out transform ${
+        fade ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
+      } flex flex-col items-center justify-center h-screen text-center px-6 bg-white`}>
+        <h1 className="text-2xl font-bold mb-4 text-gray-800">Мы не публикуем анкеты</h1>
+        <p className="text-gray-600 mb-2">Никто не увидит тебя, если ты не хочешь</p>
+        <p className="text-gray-600 mb-8">Ты сам выбираешь, с кем говорить</p>
         <button
           onClick={() => setShowIntro(false)}
-          className="bg-green-600 text-white px-6 py-3 rounded-xl hover:bg-green-700 transition"
+          className="bg-green-600 text-white px-8 py-3 rounded-2xl shadow-xl font-semibold hover:bg-green-700 transition"
         >
           Далее
         </button>
@@ -87,42 +93,45 @@ const Form = () => {
   }
 
   return (
-    <div className="max-w-xl mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">Заполни анкету</h1>
+    <div className="max-w-xl mx-auto p-6 bg-white rounded-xl shadow-xl mt-8 animate-fade-in">
+      <h1 className="text-3xl font-bold mb-6 text-gray-900">Заполни анкету</h1>
 
       <input
         type="text"
         placeholder="Имя"
         value={name}
         onChange={(e) => setName(e.target.value)}
-        className="w-full mb-3 p-3 rounded-xl border border-gray-300"
+        className="w-full mb-4 p-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-green-500"
       />
+
       <input
         type="text"
         placeholder="Адрес (город, район, улица)"
         value={address}
         onChange={(e) => setAddress(e.target.value)}
-        className="w-full mb-3 p-3 rounded-xl border border-gray-300"
+        className="w-full mb-4 p-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-green-500"
       />
+
       <input
         type="number"
         placeholder="Возраст"
         value={age}
         onChange={(e) => setAge(e.target.value)}
-        className="w-full mb-3 p-3 rounded-xl border border-gray-300"
+        className="w-full mb-4 p-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-green-500"
       />
+
       <textarea
         placeholder="Интересы"
         value={interests}
         onChange={(e) => setInterests(e.target.value)}
-        className="w-full mb-3 p-3 rounded-xl border border-gray-300"
+        className="w-full mb-4 p-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-green-500"
       />
 
       <label className="block text-sm font-medium text-gray-700 mb-1">Цель встречи</label>
       <select
         value={activity}
         onChange={(e) => setActivity(e.target.value)}
-        className="w-full mb-3 p-3 rounded-xl border border-gray-300"
+        className="w-full mb-4 p-3 rounded-xl border border-gray-300"
       >
         <option value="">Выбери цель</option>
         <option value="Кофе">Кофе</option>
@@ -134,7 +143,7 @@ const Form = () => {
       <select
         value={vibe}
         onChange={(e) => setVibe(e.target.value)}
-        className="w-full mb-3 p-3 rounded-xl border border-gray-300"
+        className="w-full mb-4 p-3 rounded-xl border border-gray-300"
       >
         <option value="">Выбери настроение</option>
         <option value="Просто пройтись">Просто пройтись</option>
@@ -142,12 +151,12 @@ const Form = () => {
         <option value="Хочу активности">Хочу активности</option>
       </select>
 
-      <label className="block text-sm font-medium text-gray-700 mb-1">Фото профиля</label>
+      <label className="block text-sm font-medium text-gray-700 mb-1">Фото профиля (необязательно)</label>
       <input
         type="file"
         accept="image/*,.heic"
         onChange={handlePhotoChange}
-        className="mb-4 w-full border border-gray-300 rounded-xl p-2 bg-white shadow-sm"
+        className="mb-4 w-full border border-gray-300 rounded-xl p-2 bg-white shadow-sm file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
       />
       {photo && (
         <img
@@ -159,7 +168,7 @@ const Form = () => {
 
       <button
         onClick={handleSubmit}
-        className="w-full bg-green-600 text-white py-3 rounded-xl font-bold hover:bg-green-700 transition"
+        className="w-full bg-green-600 text-white py-3 rounded-xl font-bold hover:bg-green-700 transition shadow-lg"
       >
         🚀 ГУЛЯТЬ
       </button>

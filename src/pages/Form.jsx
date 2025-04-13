@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import heic2any from "heic2any";
-import { motion } from "framer-motion";
 
 const Form = () => {
   const [showIntro, setShowIntro] = useState(true);
@@ -44,14 +43,26 @@ const Form = () => {
     formData.append("activity", activity);
     formData.append("vibe", vibe);
     formData.append("chat_id", chatId);
-    if (photo) formData.append("photo", photo);
+    if (photo) {
+      formData.append("photo", photo);
+    }
 
     try {
       await fetch("https://gulyai-backend-production.up.railway.app/api/form", {
         method: "POST",
         body: formData,
       });
-      localStorage.setItem("user", JSON.stringify(Object.fromEntries(formData)));
+
+      localStorage.setItem("user", JSON.stringify({
+        name,
+        address,
+        age,
+        interests,
+        activity,
+        vibe,
+        photo: photo ? URL.createObjectURL(photo) : null,
+      }));
+
       window.location.href = "/profile";
     } catch (err) {
       alert("❌ Ошибка отправки анкеты.");
@@ -61,22 +72,17 @@ const Form = () => {
 
   if (showIntro) {
     return (
-      <motion.div
-        className="text-center p-6"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.8 }}
-      >
-        <h2 className="text-xl font-semibold mb-3">Мы не публикуем анкеты</h2>
-        <p>Никто не увидит тебя, если ты не хочешь</p>
-        <p className="mt-1 mb-4">Ты сам выбираешь, с кем говорить</p>
+      <div className="p-6 text-center animate-fade-in">
+        <h1 className="text-xl font-bold mb-4">Мы не публикуем анкеты</h1>
+        <p className="mb-2">Никто не увидит тебя, если ты не хочешь</p>
+        <p className="mb-6">Ты сам выбираешь, с кем говорить</p>
         <button
           onClick={() => setShowIntro(false)}
-          className="bg-green-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-green-700 transition"
+          className="bg-green-600 text-white px-6 py-3 rounded-xl hover:bg-green-700 transition"
         >
           Далее
         </button>
-      </motion.div>
+      </div>
     );
   }
 
@@ -91,7 +97,6 @@ const Form = () => {
         onChange={(e) => setName(e.target.value)}
         className="w-full mb-3 p-3 rounded-xl border border-gray-300"
       />
-
       <input
         type="text"
         placeholder="Адрес (город, район, улица)"
@@ -99,7 +104,6 @@ const Form = () => {
         onChange={(e) => setAddress(e.target.value)}
         className="w-full mb-3 p-3 rounded-xl border border-gray-300"
       />
-
       <input
         type="number"
         placeholder="Возраст"
@@ -107,7 +111,6 @@ const Form = () => {
         onChange={(e) => setAge(e.target.value)}
         className="w-full mb-3 p-3 rounded-xl border border-gray-300"
       />
-
       <textarea
         placeholder="Интересы"
         value={interests}
@@ -139,14 +142,13 @@ const Form = () => {
         <option value="Хочу активности">Хочу активности</option>
       </select>
 
-      <label className="block text-sm font-medium text-gray-700 mb-1">Фото профиля (необязательно)</label>
+      <label className="block text-sm font-medium text-gray-700 mb-1">Фото профиля</label>
       <input
         type="file"
         accept="image/*,.heic"
         onChange={handlePhotoChange}
-        className="mb-4 w-full border border-gray-300 rounded-xl p-2 bg-white shadow-sm file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+        className="mb-4 w-full border border-gray-300 rounded-xl p-2 bg-white shadow-sm"
       />
-
       {photo && (
         <img
           src={URL.createObjectURL(photo)}

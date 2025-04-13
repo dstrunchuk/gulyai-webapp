@@ -27,10 +27,13 @@ const Profile = () => {
           😊
         </div>
       )}
-
+  
       <h2 className="text-2xl font-bold mb-1">{user.name || "—"}</h2>
       <p className="text-gray-500 mb-4">{user.age ? `${user.age} лет` : "Возраст не указан"}</p>
-
+  
+      <p className="mb-2 text-left">
+        📍 <strong>Адрес:</strong> {user.address || "—"}
+      </p>
       <p className="mb-2 text-left">
         🎯 <strong>Цель встречи:</strong> {user.activity || "—"}
       </p>
@@ -40,12 +43,12 @@ const Profile = () => {
       <p className="mb-4 text-left">
         🔥 <strong>Интересы:</strong> {user.interests || "—"}
       </p>
-
+  
       <button className="w-full bg-blue-600 text-white py-3 rounded-xl font-bold hover:bg-blue-700 transition">
         👥 Смотреть людей рядом
       </button>
     </div>
-  );
+  );  
 };
 
 export default Profile;

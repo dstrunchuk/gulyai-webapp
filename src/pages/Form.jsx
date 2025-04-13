@@ -51,8 +51,11 @@ const Form = () => {
         method: "POST",
         body: formData,
       });
+      const result = await response.json();
 
       const profileData = Object.fromEntries(formData.entries());
+      profileData.photo_url = result.photo_url; // добавим в localStorage
+
       localStorage.setItem("user", JSON.stringify(profileData));
       window.location.href = "/profile";
     } catch (err) {
@@ -66,6 +69,7 @@ const Form = () => {
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -30 }}
         transition={{ duration: 0.6 }}
         className="min-h-screen flex flex-col justify-center items-center px-6 bg-[#1c1c1e] text-white"
       >

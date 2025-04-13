@@ -25,10 +25,10 @@ const Profile = () => {
 
       {user.photo_url && (
         <img
-          src={user.photo_url}
-          alt="Фото профиля"
-          className="w-40 h-40 object-cover rounded-2xl border mb-6 shadow-lg"
-        />
+        src={user?.photo_url}
+        alt="Фото профиля"
+        className="mb-4 w-32 h-32 object-cover rounded-full border border-gray-700"
+      />
       )}
 
       <div className="w-full max-w-md bg-zinc-900 p-6 rounded-2xl shadow-lg space-y-4">

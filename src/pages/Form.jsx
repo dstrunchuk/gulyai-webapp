@@ -15,11 +15,14 @@ const Form = () => {
 
   useEffect(() => {
     const tg = window.Telegram.WebApp;
-    tg.ready(); // переместили выше
-    const id = tg?.initDataUnsafe?.user?.id;
-    if (id) {
-      setChatId(id);
-    }
+    tg.ready();
+    const interval = setInterval(() => {
+      if (tg?.initDataUnsafe?.user?.id) {
+        setChatId(tg.initDataUnsafe.user.id);
+        clearInterval(interval);
+      }
+    }, 300);
+    return () => clearInterval(interval);
   }, []);
 
   const convertToJpeg = async (file) => {

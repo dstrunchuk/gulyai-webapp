@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 
 const Form = () => {
   const [showIntro, setShowIntro] = useState(true);
+  const [chatId, setChatId] = useState(null);
   const [name, setName] = useState("");
   const [address, setAddress] = useState("");
   const [age, setAge] = useState("");
@@ -11,8 +12,6 @@ const Form = () => {
   const [activity, setActivity] = useState("");
   const [vibe, setVibe] = useState("");
   const [photo, setPhoto] = useState(null);
-  const [chatId, setChatId] = useState(null);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const tg = window.Telegram.WebApp;
@@ -20,7 +19,6 @@ const Form = () => {
     if (tg?.initDataUnsafe?.user?.id) {
       setChatId(tg.initDataUnsafe.user.id);
     }
-    setTimeout(() => setLoading(false), 1000); // fallback если ID не пришёл
   }, []);
 
   const convertToJpeg = async (file) => {
@@ -38,11 +36,6 @@ const Form = () => {
   };
 
   const handleSubmit = async () => {
-    if (!chatId) {
-      alert("ID Telegram ещё загружается. Подождите секунду...");
-      return;
-    }
-
     const formData = new FormData();
     formData.append("name", name);
     formData.append("address", address);
@@ -58,8 +51,8 @@ const Form = () => {
         method: "POST",
         body: formData,
       });
-      const result = await response.json();
 
+      const result = await response.json();
       const profileData = Object.fromEntries(formData.entries());
       profileData.photo_url = result.photo_url;
 
@@ -99,21 +92,43 @@ const Form = () => {
     <div className="max-w-xl mx-auto p-4 bg-[#1c1c1e] text-white min-h-screen">
       <h1 className="text-2xl font-bold mb-4">Заполни анкету</h1>
 
-      <input type="text" placeholder="Имя" value={name} onChange={(e) => setName(e.target.value)}
-        className="w-full mb-3 p-3 rounded-xl border border-gray-600 bg-[#2c2c2e]" />
+      <input
+        type="text"
+        placeholder="Имя"
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+        className="w-full mb-3 p-3 rounded-xl border border-gray-600 bg-[#2c2c2e]"
+      />
 
-      <input type="text" placeholder="Адрес (город, район, улица)" value={address} onChange={(e) => setAddress(e.target.value)}
-        className="w-full mb-3 p-3 rounded-xl border border-gray-600 bg-[#2c2c2e]" />
+      <input
+        type="text"
+        placeholder="Адрес (город, район, улица)"
+        value={address}
+        onChange={(e) => setAddress(e.target.value)}
+        className="w-full mb-3 p-3 rounded-xl border border-gray-600 bg-[#2c2c2e]"
+      />
 
-      <input type="number" placeholder="Возраст" value={age} onChange={(e) => setAge(e.target.value)}
-        className="w-full mb-3 p-3 rounded-xl border border-gray-600 bg-[#2c2c2e]" />
+      <input
+        type="number"
+        placeholder="Возраст"
+        value={age}
+        onChange={(e) => setAge(e.target.value)}
+        className="w-full mb-3 p-3 rounded-xl border border-gray-600 bg-[#2c2c2e]"
+      />
 
-      <textarea placeholder="Интересы" value={interests} onChange={(e) => setInterests(e.target.value)}
-        className="w-full mb-3 p-3 rounded-xl border border-gray-600 bg-[#2c2c2e]" />
+      <textarea
+        placeholder="Интересы"
+        value={interests}
+        onChange={(e) => setInterests(e.target.value)}
+        className="w-full mb-3 p-3 rounded-xl border border-gray-600 bg-[#2c2c2e]"
+      />
 
       <label className="block text-sm mb-1">Цель встречи</label>
-      <select value={activity} onChange={(e) => setActivity(e.target.value)}
-        className="w-full mb-3 p-3 rounded-xl border border-gray-600 bg-[#2c2c2e]">
+      <select
+        value={activity}
+        onChange={(e) => setActivity(e.target.value)}
+        className="w-full mb-3 p-3 rounded-xl border border-gray-600 bg-[#2c2c2e]"
+      >
         <option value="">Выбери цель</option>
         <option value="Кофе">Кофе</option>
         <option value="Прогулка">Прогулка</option>
@@ -121,8 +136,11 @@ const Form = () => {
       </select>
 
       <label className="block text-sm mb-1">Микро-настроение</label>
-      <select value={vibe} onChange={(e) => setVibe(e.target.value)}
-        className="w-full mb-3 p-3 rounded-xl border border-gray-600 bg-[#2c2c2e]">
+      <select
+        value={vibe}
+        onChange={(e) => setVibe(e.target.value)}
+        className="w-full mb-3 p-3 rounded-xl border border-gray-600 bg-[#2c2c2e]"
+      >
         <option value="">Выбери настроение</option>
         <option value="Просто пройтись">Просто пройтись</option>
         <option value="Поговорить">Поговорить</option>
@@ -130,21 +148,30 @@ const Form = () => {
       </select>
 
       <label className="block text-sm mb-1">Фото профиля</label>
-      <input type="file" accept="image/*,.heic" onChange={handlePhotoChange}
-        className="mb-4 w-full text-white file:bg-gray-700 file:text-white file:rounded-xl file:px-4 file:py-2 border border-gray-600 bg-[#2c2c2e]" />
+      <input
+        type="file"
+        accept="image/*,.heic"
+        onChange={handlePhotoChange}
+        className="mb-4 w-full text-white file:bg-gray-700 file:text-white file:rounded-xl file:px-4 file:py-2 border border-gray-600 bg-[#2c2c2e]"
+      />
       {photo && (
-        <img src={URL.createObjectURL(photo)} alt="Фото"
-          className="mb-4 w-32 h-32 object-cover rounded-xl border border-gray-700" />
+        <img
+          src={URL.createObjectURL(photo)}
+          alt="Фото"
+          className="mb-4 w-32 h-32 object-cover rounded-xl border border-gray-700"
+        />
       )}
 
       <button
         onClick={handleSubmit}
-        disabled={loading || !chatId}
-        className={`w-full py-3 rounded-xl font-bold transition ${loading || !chatId
-          ? "bg-gray-500 text-white cursor-not-allowed"
-          : "bg-white text-black hover:bg-gray-300"}`}
+        disabled={!chatId}
+        className={`w-full py-3 rounded-xl font-bold transition ${
+          chatId
+            ? "bg-white text-black hover:bg-gray-300"
+            : "bg-gray-600 text-gray-400 cursor-not-allowed"
+        }`}
       >
-        {loading || !chatId ? "Загрузка..." : "🚀 ГУЛЯТЬ"}
+        {chatId ? "🚀 ГУЛЯТЬ" : "Загрузка..."}
       </button>
     </div>
   );

@@ -16,6 +16,7 @@ const Form = () => {
   useEffect(() => {
     const tg = window.Telegram.WebApp;
     tg.ready();
+    console.log("Telegram WebApp:", tg.initDataUnsafe); // лог для отладки
     if (tg?.initDataUnsafe?.user?.id) {
       setChatId(tg.initDataUnsafe.user.id);
     }
@@ -164,7 +165,7 @@ const Form = () => {
 
       <button
         onClick={handleSubmit}
-        disabled={!chatId}
+        disabled={false}
         className={`w-full py-3 rounded-xl font-bold transition ${
           chatId
             ? "bg-white text-black hover:bg-gray-300"

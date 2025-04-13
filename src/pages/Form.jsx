@@ -18,26 +18,25 @@ const Form = () => {
 
   useEffect(() => {
     const tg = window.Telegram?.WebApp;
-    tg?.ready();
-
-    let retries = 0;
-    const tryLoadId = () => {
-      const id = tg?.initDataUnsafe?.user?.id;
-      if (id) {
-        setChatId(id);
-        setLoadingId(false);
-      } else {
-        retries++;
-        if (retries >= 10) {
+    console.log("Telegram initDataUnsafe:", tg?.initDataUnsafe);
+  
+    const userId = tg?.initDataUnsafe?.user?.id;
+    console.log("Detected chat ID:", userId);
+  
+    if (userId) {
+      setChatId(userId);
+      setIdLoading(false);
+    } else {
+      const timeout = setTimeout(() => {
+        if (!chatId) {
           setIdFailed(true);
-          setLoadingId(false);
-        } else {
-          setTimeout(tryLoadId, 500);
+          setIdLoading(false);
         }
-      }
-    };
-
-    tryLoadId();
+      }, 5000);
+      return () => clearTimeout(timeout);
+    }
+  
+    tg?.ready();
   }, []);
 
   const convertToJpeg = async (file) => {

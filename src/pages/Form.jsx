@@ -3,11 +3,8 @@ import heic2any from "heic2any";
 import { motion } from "framer-motion";
 
 const Form = () => {
-  const [idLoading, setIdLoading] = useState(true);
-  const [showIntro, setShowIntro] = useState(true);
+  const [stage, setStage] = useState("intro"); // intro | loading | failed | form
   const [chatId, setChatId] = useState(null);
-  const [loadingId, setLoadingId] = useState(true);
-  const [idFailed, setIdFailed] = useState(false);
 
   const [name, setName] = useState("");
   const [address, setAddress] = useState("");
@@ -17,25 +14,25 @@ const Form = () => {
   const [vibe, setVibe] = useState("");
   const [photo, setPhoto] = useState(null);
 
+  // Try to get Telegram ID
   useEffect(() => {
+    if (stage !== "loading") return;
+
     const tg = window.Telegram?.WebApp;
     tg?.ready();
-  
+
     const id = tg?.initDataUnsafe?.user?.id;
-    console.log("Detected chat ID:", id);
-  
+
     if (id) {
       setChatId(id);
-      setIdLoading(false);
+      setStage("form");
     } else {
-      setTimeout(() => {
-        if (!chatId) {
-          setIdFailed(true);
-          setIdLoading(false);
-        }
+      const timeout = setTimeout(() => {
+        setStage("failed");
       }, 5000);
+      return () => clearTimeout(timeout);
     }
-  }, []);
+  }, [stage]);
 
   const convertToJpeg = async (file) => {
     if (file.type === "image/heic" || file.name.toLowerCase().endsWith(".heic")) {
@@ -52,8 +49,6 @@ const Form = () => {
   };
 
   const handleSubmit = async () => {
-    if (!chatId) return;
-
     const formData = new FormData();
     formData.append("name", name);
     formData.append("address", address);
@@ -82,7 +77,7 @@ const Form = () => {
     }
   };
 
-  if (showIntro) {
+  if (stage === "intro") {
     return (
       <motion.div
         initial={{ opacity: 0, y: 30 }}
@@ -97,7 +92,7 @@ const Form = () => {
           <li>Ты сам выбираешь, с кем говорить</li>
         </ul>
         <button
-          onClick={() => setShowIntro(false)}
+          onClick={() => setStage("loading")}
           className="mt-8 bg-white text-black font-bold py-2 px-6 rounded-xl hover:bg-gray-200"
         >
           Далее
@@ -106,15 +101,16 @@ const Form = () => {
     );
   }
 
-  if (loadingId) {
+  if (stage === "loading") {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#1c1c1e] text-white text-xl">
-        🔄 Загружаем Telegram ID...
+      <div className="min-h-screen flex flex-col justify-center items-center bg-black text-white text-center px-6">
+        <p className="text-xl mb-3">⏳ Загружаем Telegram ID...</p>
+        <p className="text-sm text-gray-400">Если не загружается — перезапусти WebApp</p>
       </div>
     );
   }
 
-  if (idFailed) {
+  if (stage === "failed") {
     return (
       <div className="min-h-screen flex flex-col justify-center items-center bg-black text-white px-6 text-center">
         <p className="text-xl mb-4">⚠️ Не удалось загрузить Telegram ID</p>
@@ -162,7 +158,6 @@ const Form = () => {
         onChange={(e) => setInterests(e.target.value)}
         className="w-full mb-3 p-3 rounded-xl border border-gray-600 bg-[#2c2c2e]"
       />
-
       <label className="block text-sm mb-1">Цель встречи</label>
       <select
         value={activity}
@@ -204,10 +199,7 @@ const Form = () => {
 
       <button
         onClick={handleSubmit}
-        className={`w-full py-3 rounded-xl font-bold transition ${
-          !chatId ? "bg-gray-400 cursor-not-allowed" : "bg-white text-black hover:bg-gray-300"
-        }`}
-        disabled={!chatId}
+        className="w-full bg-white text-black py-3 rounded-xl font-bold hover:bg-gray-300 transition"
       >
         🚀 ГУЛЯТЬ
       </button>

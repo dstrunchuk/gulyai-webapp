@@ -1,13 +1,12 @@
-const [idLoading, setIdLoading] = useState(true);
-const [idFailed, setIdFailed] = useState(false);
 import { useState, useEffect } from "react";
 import heic2any from "heic2any";
 import { motion } from "framer-motion";
 
 const Form = () => {
-  const [showIntro, setShowIntro] = useState(true);
   const [chatId, setChatId] = useState(null);
-  const [loadingId, setLoadingId] = useState(true);
+  const [idLoading, setIdLoading] = useState(true);
+  const [idFailed, setIdFailed] = useState(false);
+  const [showIntro, setShowIntro] = useState(true);
 
   const [name, setName] = useState("");
   const [address, setAddress] = useState("");
@@ -19,23 +18,20 @@ const Form = () => {
 
   useEffect(() => {
     const tg = window.Telegram?.WebApp;
-    const userId = tg?.initDataUnsafe?.user?.id;
-  
-    if (userId) {
-      setChatId(userId);
+    tg?.ready();
+
+    const id = tg?.initDataUnsafe?.user?.id;
+    if (id) {
+      setChatId(id);
       setIdLoading(false);
     } else {
       const timeout = setTimeout(() => {
-        if (!chatId) {
-          setIdFailed(true);
-          setIdLoading(false);
-        }
-      }, 5000); // 5 секунд на загрузку
-  
+        setIdFailed(true);
+        setIdLoading(false);
+      }, 5000);
+
       return () => clearTimeout(timeout);
     }
-  
-    tg?.ready();
   }, []);
 
   const convertToJpeg = async (file) => {
@@ -53,6 +49,8 @@ const Form = () => {
   };
 
   const handleSubmit = async () => {
+    if (!chatId) return;
+
     const formData = new FormData();
     formData.append("name", name);
     formData.append("address", address);
@@ -81,27 +79,12 @@ const Form = () => {
     }
   };
 
-  if (showIntro) {
+  if (idLoading) {
     return (
-      <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-        className="min-h-screen flex flex-col justify-center items-center px-6 bg-[#1c1c1e] text-white"
-      >
-        <h1 className="text-3xl font-bold mb-6">Перед тем как начать</h1>
-        <ul className="text-lg space-y-3 text-center">
-          <li>Мы не публикуем анкеты</li>
-          <li>Никто не увидит тебя, если ты не хочешь</li>
-          <li>Ты сам выбираешь, с кем говорить</li>
-        </ul>
-        <button
-          onClick={() => setShowIntro(false)}
-          className="mt-8 bg-white text-black font-bold py-2 px-6 rounded-xl hover:bg-gray-200"
-        >
-          Далее
-        </button>
-      </motion.div>
+      <div className="min-h-screen flex flex-col justify-center items-center bg-black text-white px-6 text-center">
+        <p className="text-lg mb-2">⏳ Загружаем Telegram ID...</p>
+        <p className="text-sm text-gray-400">Если не загружается — перезапусти WebApp</p>
+      </div>
     );
   }
 
@@ -122,6 +105,29 @@ const Form = () => {
     );
   }
 
+  if (showIntro) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="min-h-screen flex flex-col justify-center items-center px-6 bg-[#1c1c1e] text-white"
+      >
+        <h1 className="text-3xl font-bold mb-6">Перед тем как начать</h1>
+        <ul className="text-lg space-y-3 text-center">
+          <li>Мы не публикуем анкеты</li>
+          <li>Никто не увидит тебя, если ты не хочешь</li>
+          <li>Ты сам выбираешь, с кем говорить</li>
+        </ul>
+        <button
+          onClick={() => setShowIntro(false)}
+          className="mt-8 bg-white text-black font-bold py-2 px-6 rounded-xl hover:bg-gray-200"
+        >
+          Далее
+        </button>
+      </motion.div>
+    );
+  }
+
   return (
     <div className="max-w-xl mx-auto p-4 bg-[#1c1c1e] text-white min-h-screen">
       <h1 className="text-2xl font-bold mb-4">Заполни анкету</h1>
@@ -133,7 +139,6 @@ const Form = () => {
         onChange={(e) => setName(e.target.value)}
         className="w-full mb-3 p-3 rounded-xl border border-gray-600 bg-[#2c2c2e]"
       />
-
       <input
         type="text"
         placeholder="Адрес (город, район, улица)"
@@ -141,7 +146,6 @@ const Form = () => {
         onChange={(e) => setAddress(e.target.value)}
         className="w-full mb-3 p-3 rounded-xl border border-gray-600 bg-[#2c2c2e]"
       />
-
       <input
         type="number"
         placeholder="Возраст"
@@ -149,14 +153,12 @@ const Form = () => {
         onChange={(e) => setAge(e.target.value)}
         className="w-full mb-3 p-3 rounded-xl border border-gray-600 bg-[#2c2c2e]"
       />
-
       <textarea
         placeholder="Интересы"
         value={interests}
         onChange={(e) => setInterests(e.target.value)}
         className="w-full mb-3 p-3 rounded-xl border border-gray-600 bg-[#2c2c2e]"
       />
-
       <label className="block text-sm mb-1">Цель встречи</label>
       <select
         value={activity}
@@ -168,7 +170,6 @@ const Form = () => {
         <option value="Прогулка">Прогулка</option>
         <option value="Покурить">Покурить</option>
       </select>
-
       <label className="block text-sm mb-1">Микро-настроение</label>
       <select
         value={vibe}

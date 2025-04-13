@@ -4,7 +4,6 @@ import { motion } from "framer-motion";
 
 const Form = () => {
   const [showIntro, setShowIntro] = useState(true);
-  const [chatId, setChatId] = useState(null);
   const [name, setName] = useState("");
   const [address, setAddress] = useState("");
   const [age, setAge] = useState("");
@@ -12,14 +11,15 @@ const Form = () => {
   const [activity, setActivity] = useState("");
   const [vibe, setVibe] = useState("");
   const [photo, setPhoto] = useState(null);
+  const [chatId, setChatId] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    const tg = window.Telegram.WebApp;
-    tg.ready();
-    console.log("Telegram WebApp:", tg.initDataUnsafe); // лог для отладки
+    const tg = window.Telegram?.WebApp;
     if (tg?.initDataUnsafe?.user?.id) {
       setChatId(tg.initDataUnsafe.user.id);
     }
+    tg?.ready?.();
   }, []);
 
   const convertToJpeg = async (file) => {
@@ -37,6 +37,12 @@ const Form = () => {
   };
 
   const handleSubmit = async () => {
+    if (!chatId) {
+      alert("❗ Не удалось получить Telegram ID. Перезапусти приложение.");
+      return;
+    }
+
+    setLoading(true);
     const formData = new FormData();
     formData.append("name", name);
     formData.append("address", address);
@@ -62,6 +68,8 @@ const Form = () => {
     } catch (err) {
       alert("❌ Ошибка отправки анкеты.");
       console.error(err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -70,6 +78,7 @@ const Form = () => {
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -30 }}
         transition={{ duration: 0.6 }}
         className="min-h-screen flex flex-col justify-center items-center px-6 bg-[#1c1c1e] text-white"
       >
@@ -165,14 +174,12 @@ const Form = () => {
 
       <button
         onClick={handleSubmit}
-        disabled={false}
+        disabled={loading}
         className={`w-full py-3 rounded-xl font-bold transition ${
-          chatId
-            ? "bg-white text-black hover:bg-gray-300"
-            : "bg-gray-600 text-gray-400 cursor-not-allowed"
+          loading ? 'bg-gray-500 text-white cursor-not-allowed' : 'bg-white text-black hover:bg-gray-300'
         }`}
       >
-        {chatId ? "🚀 ГУЛЯТЬ" : "Загрузка..."}
+        {loading ? "Загрузка..." : "🚀 ГУЛЯТЬ"}
       </button>
     </div>
   );

@@ -16,20 +16,23 @@ const Form = () => {
 
   // Try to get Telegram ID
   useEffect(() => {
+    if (stage !== "loading") return;
+
     const tg = window.Telegram?.WebApp;
-    const chatId = tg?.initDataUnsafe?.user?.id;
-  
-    document.body.innerHTML += `<div style="color:white;background:#111;padding:10px;">
-      <b>Chat ID:</b> ${chatId || "не найден"}
-    </div>`;
-  
-    if (chatId) {
-      setChatId(chatId);
-      setLoadingId(false);
-    }
-  
     tg?.ready();
-  }, []);
+
+    const id = tg?.initDataUnsafe?.user?.id;
+
+    if (id) {
+      setChatId(id);
+      setStage("form");
+    } else {
+      const timeout = setTimeout(() => {
+        setStage("failed");
+      }, 5000);
+      return () => clearTimeout(timeout);
+    }
+  }, [stage]);
 
   const convertToJpeg = async (file) => {
     if (file.type === "image/heic" || file.name.toLowerCase().endsWith(".heic")) {

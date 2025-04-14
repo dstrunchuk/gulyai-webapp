@@ -3,6 +3,7 @@ import heic2any from "heic2any";
 import { motion } from "framer-motion";
 
 const Form = () => {
+  const [checkingStorage, setCheckingStorage] = useState(true);
   const [stage, setStage] = useState("intro");
   const [chatId, setChatId] = useState(null);
   const [submitting, setSubmitting] = useState(false);
@@ -27,10 +28,12 @@ const Form = () => {
           alert(`⚠️ Внимание! Анкета будет удалена через ${30 - daysPassed} дней.`);
         }
         window.location.href = "/profile";
+        return;
       } else {
         localStorage.removeItem("user");
       }
     }
+    setCheckingStorage(false);
   }, []);
 
   useEffect(() => {
@@ -47,6 +50,10 @@ const Form = () => {
       return () => clearTimeout(timeout);
     }
   }, [stage]);
+  
+  if (checkingStorage) {
+    return null; // или можно вернуть <p>Загрузка...</p>
+  }
 
   const convertToJpeg = async (file) => {
     if (file.type === "image/heic" || file.name.toLowerCase().endsWith(".heic")) {

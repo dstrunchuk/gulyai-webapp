@@ -214,7 +214,7 @@ const Form = () => {
         />
       )}
 
-      <button
+<button
         onClick={handleSubmit}
         disabled={submitting}
         className={`w-full py-3 rounded-xl font-bold transition ${
@@ -223,7 +223,16 @@ const Form = () => {
       >
         {submitting ? "⏳ Загрузка..." : "🚀 ГУЛЯТЬ"}
       </button>
-    </div>
+
+      <div className="mt-6 flex justify-center">
+        <button
+          onClick={() => setStage("intro")}
+          className="bg-gray-700 text-white py-2 px-6 rounded-xl hover:bg-gray-600"
+        >
+          ← Назад
+        </button>
+      </div>
+    </div>  
   );
 };
 

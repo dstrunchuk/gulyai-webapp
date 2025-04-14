@@ -56,14 +56,14 @@ const Profile = () => {
       </div>
 
       <button
-        onClick={() => {
-          localStorage.removeItem("user");
-          window.location.href = "/";
-        }}
-        className="mt-10 text-sm text-pink-400 hover:text-pink-300 underline font-medium transition"
-      >
-        📝 Заполнить анкету заново
-      </button>
+  onClick={() => {
+    localStorage.removeItem("user");
+    window.location.href = "/";
+  }}
+  className="mt-6 py-3 px-6 w-full text-center bg-gradient-to-r from-red-500 to-pink-500 hover:from-pink-500 hover:to-red-500 text-white font-bold rounded-xl shadow-lg transition duration-300"
+>
+  📝 Заполнить анкету заново
+</button>
     </div>
   );
 };

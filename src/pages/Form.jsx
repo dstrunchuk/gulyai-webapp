@@ -17,19 +17,15 @@ const Form = () => {
 
   useEffect(() => {
     if (stage !== "loading") return;
-
     const tg = window.Telegram?.WebApp;
     tg?.ready();
-
     const id = tg?.initDataUnsafe?.user?.id;
 
     if (id) {
       setChatId(id);
       setStage("form");
     } else {
-      const timeout = setTimeout(() => {
-        setStage("failed");
-      }, 5000);
+      const timeout = setTimeout(() => setStage("failed"), 5000);
       return () => clearTimeout(timeout);
     }
   }, [stage]);
@@ -50,7 +46,6 @@ const Form = () => {
 
   const handleSubmit = async () => {
     setSubmitting(true);
-
     const formData = new FormData();
     formData.append("name", name);
     formData.append("address", address);
@@ -67,10 +62,8 @@ const Form = () => {
         body: formData,
       });
       const result = await res.json();
-
       const profileData = Object.fromEntries(formData.entries());
       profileData.photo_url = result.photo_url;
-
       localStorage.setItem("user", JSON.stringify(profileData));
       window.location.href = "/profile";
     } catch (err) {
@@ -86,14 +79,21 @@ const Form = () => {
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
-        className="min-h-screen flex flex-col justify-center items-center px-6 bg-[#1c1c1e] text-white"
+        className="min-h-screen flex flex-col justify-center items-center px-6 bg-[#1c1c1e] text-white text-center"
       >
-        <h1 className="text-3xl font-bold mb-6">Перед тем как начать</h1>
-        <ul className="text-lg space-y-3 text-center">
+        <h1 className="text-3xl font-bold mb-6">Прежде чем начать</h1>
+        <ul className="text-lg space-y-3 mb-8">
           <li>Мы не публикуем анкеты</li>
           <li>Никто не увидит тебя, если ты не хочешь</li>
-          <li>Ты сам выбираешь, с кем говорить</li>
+          <li>Ты сам(-а) выбираешь, с кем говорить</li>
         </ul>
+        <div className="bg-[#2c2c2e] p-4 rounded-xl border border-gray-600 max-w-md text-sm">
+          <p>
+            Анкета будет храниться <strong>30 дней</strong> с момента заполнения. После — удаляется
+            автоматически, и потребуется заполнить заново.
+          </p>
+          <p className="mt-2 text-gray-400">Чтобы не перегружать сервер. Надеемся на понимание!</p>
+        </div>
         <button
           onClick={() => setStage("loading")}
           className="mt-8 bg-white text-black font-bold py-2 px-6 rounded-xl hover:bg-gray-200"

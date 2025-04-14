@@ -108,7 +108,15 @@ const Form = () => {
     return (
       <div className="min-h-screen flex flex-col justify-center items-center bg-black text-white text-center px-6">
         <p className="text-xl mb-3">⏳ Загружаем Telegram ID...</p>
-        <p className="text-sm text-gray-400">Если не загружается — перезапусти WebApp</p>
+        <p className="text-sm text-gray-400 mb-6">
+          Если не загружается — перезапусти WebApp
+        </p>
+        <button
+          onClick={() => setStage("intro")}
+          className="bg-white text-black px-6 py-2 rounded-xl hover:bg-gray-200"
+        >
+          Назад
+        </button>
       </div>
     );
   }

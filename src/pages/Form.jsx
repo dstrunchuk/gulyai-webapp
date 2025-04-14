@@ -3,7 +3,7 @@ import heic2any from "heic2any";
 import { motion } from "framer-motion";
 
 const Form = () => {
-  const [stage, setStage] = useState("intro"); // intro | loading | failed | form
+  const [stage, setStage] = useState("intro");
   const [chatId, setChatId] = useState(null);
   const [submitting, setSubmitting] = useState(false);
 
@@ -14,6 +14,21 @@ const Form = () => {
   const [activity, setActivity] = useState("");
   const [vibe, setVibe] = useState("");
   const [photo, setPhoto] = useState(null);
+
+  useEffect(() => {
+    const existingData = localStorage.getItem("user");
+    if (existingData) {
+      const parsed = JSON.parse(existingData);
+      const createdAt = parsed?.created_at;
+      if (createdAt) {
+        const daysLeft =
+          30 - Math.floor((Date.now() - new Date(createdAt).getTime()) / (1000 * 60 * 60 * 24));
+        if (daysLeft <= 5) {
+          alert(`⚠️ Внимание! Анкета будет удалена через ${daysLeft} дней.`);
+        }
+      }
+    }
+  }, []);
 
   useEffect(() => {
     if (stage !== "loading") return;
@@ -64,6 +79,7 @@ const Form = () => {
       const result = await res.json();
       const profileData = Object.fromEntries(formData.entries());
       profileData.photo_url = result.photo_url;
+      profileData.created_at = new Date().toISOString();
       localStorage.setItem("user", JSON.stringify(profileData));
       window.location.href = "/profile";
     } catch (err) {
@@ -89,9 +105,7 @@ const Form = () => {
         </ul>
         <div className="bg-[#2c2c2e] p-4 rounded-xl border border-gray-600 max-w-md text-sm">
           <p>
-            Анкета будет храниться <strong>30 дней</strong> с момента заполнения. 
-            После — удаляется автоматически, и потребуется заполнить заново.
-            Чтобы не перегружать сервер. 
+            Анкета будет храниться <strong>30 дней</strong> с момента заполнения. После — удаляется автоматически, и потребуется заполнить заново. Чтобы не перегружать сервер.
           </p>
           <p className="mt-2 text-gray-400">Надеемся на понимание!</p>
         </div>
@@ -175,6 +189,7 @@ const Form = () => {
         onChange={(e) => setInterests(e.target.value)}
         className="w-full mb-3 p-3 rounded-xl border border-gray-600 bg-[#2c2c2e]"
       />
+
       <label className="block text-sm mb-1">Цель встречи</label>
       <select
         value={activity}
@@ -214,7 +229,7 @@ const Form = () => {
         />
       )}
 
-<button
+      <button
         onClick={handleSubmit}
         disabled={submitting}
         className={`w-full py-3 rounded-xl font-bold transition ${
@@ -232,7 +247,7 @@ const Form = () => {
           ← Назад
         </button>
       </div>
-    </div>  
+    </div>
   );
 };
 

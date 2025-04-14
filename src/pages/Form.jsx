@@ -118,16 +118,6 @@ const Form = () => {
         >
           Далее
         </button>
-
-        <button
-          onClick={() => {
-            localStorage.removeItem("user");
-            setStage("loading");
-          }}
-          className="mt-4 underline text-sm text-gray-400 hover:text-white"
-        >
-          📝 Заполнить заново
-        </button>
       </motion.div>
     );
   }

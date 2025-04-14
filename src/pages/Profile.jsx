@@ -52,6 +52,15 @@ const Profile = () => {
           className="bg-green-600 hover:bg-green-700 text-white py-3 rounded-xl font-bold transition"
         >
           Смотреть людей рядом
+          <button
+  onClick={() => {
+    localStorage.removeItem("user");
+    window.location.href = "/";
+  }}
+  className="mt-6 underline text-sm text-gray-300 hover:text-white"
+>
+  📝 Заполнить заново
+</button>
         </button>
       </div>
     </div>

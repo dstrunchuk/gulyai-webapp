@@ -4,7 +4,7 @@ const Profile = () => {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
-    document.documentElement.classList.add("dark"); // Включаем тёмную тему
+    document.documentElement.classList.add("dark");
     const stored = localStorage.getItem("user");
     if (stored) {
       setUser(JSON.parse(stored));
@@ -25,10 +25,10 @@ const Profile = () => {
 
       {user.photo_url && (
         <img
-        src={user?.photo_url}
-        alt="Фото профиля"
-        className="mb-4 w-32 h-32 object-cover rounded-full border border-gray-700"
-      />
+          src={user.photo_url}
+          alt="Фото профиля"
+          className="mb-4 w-32 h-32 object-cover rounded-full border border-gray-700"
+        />
       )}
 
       <div className="w-full max-w-md bg-zinc-900 p-6 rounded-2xl shadow-lg space-y-4">
@@ -52,17 +52,18 @@ const Profile = () => {
           className="bg-green-600 hover:bg-green-700 text-white py-3 rounded-xl font-bold transition"
         >
           Смотреть людей рядом
-        <button
-          onClick={() => {
-          localStorage.removeItem("user");
-          window.location.href = "/";
-  }}
-          className="mt-6 underline text-sm text-gray-300 hover:text-white"
-        >
-          📝 Заполнить заново
-</button>
         </button>
       </div>
+
+      <button
+        onClick={() => {
+          localStorage.removeItem("user");
+          window.location.href = "/";
+        }}
+        className="mt-10 text-sm text-pink-400 hover:text-pink-300 underline font-medium transition"
+      >
+        📝 Заполнить анкету заново
+      </button>
     </div>
   );
 };

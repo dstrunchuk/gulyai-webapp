@@ -89,10 +89,11 @@ const Form = () => {
         </ul>
         <div className="bg-[#2c2c2e] p-4 rounded-xl border border-gray-600 max-w-md text-sm">
           <p>
-            Анкета будет храниться <strong>30 дней</strong> с момента заполнения. После — удаляется
-            автоматически, и потребуется заполнить заново.
+            Анкета будет храниться <strong>30 дней</strong> с момента заполнения. 
+            После — удаляется автоматически, и потребуется заполнить заново.
+            Чтобы не перегружать сервер. 
           </p>
-          <p className="mt-2 text-gray-400">Чтобы не перегружать сервер. Надеемся на понимание!</p>
+          <p className="mt-2 text-gray-400">Надеемся на понимание!</p>
         </div>
         <button
           onClick={() => setStage("loading")}
@@ -106,18 +107,23 @@ const Form = () => {
 
   if (stage === "loading") {
     return (
-      <div className="min-h-screen flex flex-col justify-center items-center bg-black text-white text-center px-6">
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="min-h-screen flex flex-col justify-center items-center px-6 bg-black text-white text-center"
+      >
         <p className="text-xl mb-3">⏳ Загружаем Telegram ID...</p>
         <p className="text-sm text-gray-400 mb-6">
           Если не загружается — перезапусти WebApp
         </p>
         <button
           onClick={() => setStage("intro")}
-          className="bg-white text-black px-6 py-2 rounded-xl hover:bg-gray-200"
+          className="mt-2 bg-white text-black font-semibold py-2 px-6 rounded-xl hover:bg-gray-200 transition"
         >
-          Назад
+          ← Назад
         </button>
-      </div>
+      </motion.div>
     );
   }
 

@@ -1,63 +1,52 @@
 import { useEffect, useState } from "react";
+import { supabase } from "../supabaseClient";
 
 const Profile = () => {
   const [user, setUser] = useState(null);
-  const [goal, setGoal] = useState("");
-  const [vibe, setVibe] = useState("");
-  const [privacy, setPrivacy] = useState(null);
-  const [status, setStatus] = useState("inactive");
-  const [duration, setDuration] = useState("1");
+  const [status, setStatus] = useState("offline");
+  const [statusDuration, setStatusDuration] = useState(1);
+  const [privacy, setPrivacy] = useState("everyone");
+  const [updating, setUpdating] = useState(false);
 
   useEffect(() => {
     document.documentElement.classList.add("dark");
     const stored = localStorage.getItem("user");
     if (stored) {
-      const data = JSON.parse(stored);
-      setUser(data);
-      setGoal(data.activity || "");
-      setVibe(data.vibe || "");
-      setPrivacy(data.privacy_filter || null);
-      setStatus(data.status || "inactive");
+      const parsed = JSON.parse(stored);
+      setUser(parsed);
+      setStatus(parsed.status || "offline");
+      setPrivacy(parsed.privacy || "everyone");
     }
   }, []);
 
-  const handleUpdate = async (field, value) => {
-    if (!user?.chat_id) return;
-    const updated = { [field]: value };
-    setUser((prev) => ({ ...prev, ...updated }));
-    localStorage.setItem("user", JSON.stringify({ ...user, ...updated }));
-    await fetch("https://gulyai-backend-production.up.railway.app/api/update", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ chat_id: user.chat_id, ...updated })
-    });
-  };
+  const updateProfile = async () => {
+    if (!user) return;
+    setUpdating(true);
 
-  const handlePrivacy = (type) => {
-    const newVal = privacy === type ? null : type;
-    setPrivacy(newVal);
-    handleUpdate("privacy_filter", newVal);
-  };
+    const expiresAt = status === "online"
+      ? new Date(Date.now() + statusDuration * 60 * 60 * 1000).toISOString()
+      : null;
 
-  const handleStatusChange = (val) => {
-    setStatus(val);
-    if (val === "inactive") {
-      handleUpdate("status", "inactive");
-      handleUpdate("status_expires_at", null);
+    const { error } = await supabase
+      .from("users")
+      .update({ status, privacy, status_expires_at: expiresAt })
+      .eq("chat_id", user.chat_id);
+
+    if (!error) {
+      const updated = { ...user, status, privacy, status_expires_at: expiresAt };
+      localStorage.setItem("user", JSON.stringify(updated));
+      setUser(updated);
     }
+    setUpdating(false);
   };
 
-  const handleSetActive = () => {
-    const expiresAt = new Date(Date.now() + duration * 60 * 60 * 1000).toISOString();
-    handleUpdate("status", "active");
-    handleUpdate("status_expires_at", expiresAt);
-  };
-
-  if (!user) return (
-    <div className="flex items-center justify-center min-h-screen bg-black text-white">
-      <p className="text-xl animate-pulse">Загрузка профиля...</p>
-    </div>
-  );
+  if (!user) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-black text-white">
+        <p className="text-xl animate-pulse">Загрузка профиля...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-black text-white p-6 flex flex-col items-center">
@@ -76,72 +65,69 @@ const Profile = () => {
         <p><span className="text-zinc-400">Адрес:</span> {user.address}</p>
         <p><span className="text-zinc-400">Возраст:</span> {user.age}</p>
         <p><span className="text-zinc-400">Интересы:</span> {user.interests}</p>
+        <p><span className="text-zinc-400">Цель:</span> {user.activity}</p>
+        <p><span className="text-zinc-400">Настроение:</span> {user.vibe}</p>
+      </div>
 
-        <div>
-          <label className="text-zinc-400 block mb-1">Цель встречи</label>
-          <select value={goal} onChange={(e) => { setGoal(e.target.value); handleUpdate("activity", e.target.value); }}
-            className="w-full bg-zinc-800 text-white rounded-xl px-4 py-2">
-            <option value="">Выбери цель</option>
-            <option value="Кофе">Кофе</option>
-            <option value="Прогулка">Прогулка</option>
-            <option value="Покурить">Покурить</option>
+      <div className="mt-8 flex flex-col gap-4 w-full max-w-md">
+        <div className="bg-zinc-800 p-4 rounded-xl">
+          <p className="mb-2">Статус:</p>
+          <select
+            value={status}
+            onChange={(e) => setStatus(e.target.value)}
+            className="w-full mb-2 p-2 rounded-lg bg-zinc-900 text-white"
+          >
+            <option value="offline">Гуляю один(-а)</option>
+            <option value="online">Иду гулять</option>
           </select>
-        </div>
 
-        <div>
-          <label className="text-zinc-400 block mb-1">Микро-настроение</label>
-          <select value={vibe} onChange={(e) => { setVibe(e.target.value); handleUpdate("vibe", e.target.value); }}
-            className="w-full bg-zinc-800 text-white rounded-xl px-4 py-2">
-            <option value="">Выбери настроение</option>
-            <option value="Просто пройтись">Просто пройтись</option>
-            <option value="Поговорить">Поговорить</option>
-            <option value="Хочу активности">Хочу активности</option>
-          </select>
-        </div>
-
-        <div>
-          <label className="text-zinc-400 block mb-2">Конфиденциальность</label>
-          <div className="flex gap-2">
-            <button onClick={() => handlePrivacy("online")} className={`flex-1 py-2 rounded-xl ${privacy === "online" ? "bg-green-600" : "bg-zinc-800"}`}>Только онлайн</button>
-            <button onClick={() => handlePrivacy("local")} className={`flex-1 py-2 rounded-xl ${privacy === "local" ? "bg-green-600" : "bg-zinc-800"}`}>Только в районе</button>
-          </div>
-        </div>
-
-        <div>
-          <label className="text-zinc-400 block mb-2">Статус</label>
-          <select value={status} onChange={(e) => handleStatusChange(e.target.value)} className="w-full bg-zinc-800 text-white rounded-xl px-4 py-2">
-            <option value="inactive">Гуляю один(-а)</option>
-            <option value="active">Иду гулять</option>
-          </select>
-          {status === "active" && (
-            <div className="mt-3">
-              <label className="text-sm">На сколько?</label>
-              <select value={duration} onChange={(e) => setDuration(e.target.value)}
-                className="w-full bg-zinc-800 text-white rounded-xl px-4 py-2 mt-1">
-                <option value="1">1 час</option>
-                <option value="2">2 часа</option>
-                <option value="3">3 часа</option>
-              </select>
-              <button onClick={handleSetActive} className="w-full mt-3 bg-green-600 hover:bg-green-700 text-white py-2 rounded-xl">
-                Подтвердить статус
-              </button>
-            </div>
+          {status === "online" && (
+            <select
+              value={statusDuration}
+              onChange={(e) => setStatusDuration(Number(e.target.value))}
+              className="w-full p-2 rounded-lg bg-zinc-900 text-white"
+            >
+              <option value={1}>На 1 час</option>
+              <option value={2}>На 2 часа</option>
+              <option value={3}>На 3 часа</option>
+            </select>
           )}
         </div>
 
-        {status === "active" && (
-          <button onClick={() => window.location.href = "/people"}
-            className="w-full bg-purple-600 hover:bg-purple-700 py-3 text-white font-bold rounded-xl">
-            🔎 Найти собеседника
-          </button>
-        )}
+        <div className="bg-zinc-800 p-4 rounded-xl">
+          <p className="mb-2">Конфиденциальность:</p>
+          <select
+            value={privacy}
+            onChange={(e) => setPrivacy(e.target.value)}
+            className="w-full p-2 rounded-lg bg-zinc-900 text-white"
+          >
+            <option value="everyone">Онлайн для тех кто рядом</option>
+            <option value="local">Онлайн для своего района</option>
+          </select>
+        </div>
+
+        <button
+          onClick={updateProfile}
+          className="bg-white text-black py-3 rounded-xl font-bold hover:bg-gray-300 transition"
+          disabled={updating}
+        >
+          {updating ? "Сохраняем..." : "✅ Подтвердить статус"}
+        </button>
+
+        <button
+          onClick={() => window.location.href = "/people"}
+          className="bg-green-600 hover:bg-green-700 text-white py-3 rounded-xl font-bold transition"
+        >
+          Найти собеседника
+        </button>
 
         <button
           onClick={() => {
             localStorage.removeItem("user");
             window.location.href = "/";
           }}
-          className="mt-6 text-sm text-center bg-zinc-700 hover:bg-zinc-600 text-white py-3 rounded-xl">
+          className="bg-red-600 hover:bg-red-700 text-white py-3 rounded-xl font-bold transition"
+        >
           📝 Заполнить заново
         </button>
       </div>

@@ -4,7 +4,6 @@ const Profile = () => {
   const [user, setUser] = useState(null);
   const [statusDuration, setStatusDuration] = useState(1);
 
-  // Загружаем user из localStorage
   useEffect(() => {
     document.documentElement.classList.add("dark");
     const stored = localStorage.getItem("user");
@@ -12,12 +11,12 @@ const Profile = () => {
       const parsed = JSON.parse(stored);
       setUser(parsed);
 
-      // Если нет photo_url — пробуем подтянуть из базы
+      // Загружаем актуальный профиль, если фото отсутствует
       if (!parsed.photo_url) {
         fetch("https://gulyai-backend-production.up.railway.app/api/profile/" + parsed.chat_id)
-          .then((res) => res.json())
-          .then((data) => {
-            if (data.photo_url) {
+          .then(res => res.json())
+          .then(data => {
+            if (data?.photo_url) {
               const updated = { ...parsed, photo_url: data.photo_url };
               setUser(updated);
               localStorage.setItem("user", JSON.stringify(updated));

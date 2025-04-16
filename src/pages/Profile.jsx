@@ -2,13 +2,29 @@ import { useEffect, useState } from "react";
 
 const Profile = () => {
   const [user, setUser] = useState(null);
-  const [editing, setEditing] = useState({});
   const [statusDuration, setStatusDuration] = useState(1);
 
+  // Загружаем user из localStorage
   useEffect(() => {
     document.documentElement.classList.add("dark");
     const stored = localStorage.getItem("user");
-    if (stored) setUser(JSON.parse(stored));
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      setUser(parsed);
+
+      // Если нет photo_url — пробуем подтянуть из базы
+      if (!parsed.photo_url) {
+        fetch("https://gulyai-backend-production.up.railway.app/api/profile/" + parsed.chat_id)
+          .then((res) => res.json())
+          .then((data) => {
+            if (data.photo_url) {
+              const updated = { ...parsed, photo_url: data.photo_url };
+              setUser(updated);
+              localStorage.setItem("user", JSON.stringify(updated));
+            }
+          });
+      }
+    }
   }, []);
 
   const updateUser = async (updates) => {
@@ -36,7 +52,7 @@ const Profile = () => {
 
       {user.photo_url && (
         <img
-          src={user?.photo_url}
+          src={user.photo_url}
           alt="Фото профиля"
           className="mb-4 w-32 h-32 object-cover rounded-full border border-gray-700"
         />

@@ -3,6 +3,8 @@ import { useEffect, useState } from "react";
 const Profile = () => {
   const [user, setUser] = useState(null);
   const [statusDuration, setStatusDuration] = useState(1);
+  const [now, setNow] = useState(Date.now());
+  const [statusMessage, setStatusMessage] = useState("");
 
   useEffect(() => {
     document.documentElement.classList.add("dark");
@@ -10,31 +12,36 @@ const Profile = () => {
     if (stored) {
       const parsed = JSON.parse(stored);
       setUser(parsed);
-
-      // Загружаем актуальный профиль, если фото отсутствует
-      if (!parsed.photo_url) {
-        fetch("https://gulyai-backend-production.up.railway.app/api/profile/" + parsed.chat_id)
-          .then(res => res.json())
-          .then(data => {
-            if (data?.photo_url) {
-              const updated = { ...parsed, photo_url: data.photo_url };
-              setUser(updated);
-              localStorage.setItem("user", JSON.stringify(updated));
-            }
-          });
-      }
+      setStatusDuration(parsed.status_duration || 1);
     }
+
+    const interval = setInterval(() => setNow(Date.now()), 60 * 1000);
+    return () => clearInterval(interval);
   }, []);
+
+  // Сброс онлайн-статуса по истечению времени
+  useEffect(() => {
+    if (!user?.online_until) return;
+    if (now > user.online_until && user.status === "online") {
+      updateUser({ status: "offline", online_until: null });
+    }
+  }, [now]);
 
   const updateUser = async (updates) => {
     const updated = { ...user, ...updates };
     setUser(updated);
     localStorage.setItem("user", JSON.stringify(updated));
+
     await fetch("https://gulyai-backend-production.up.railway.app/api/update-profile", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ chat_id: updated.chat_id, ...updates })
     });
+  };
+
+  const resetProfile = () => {
+    localStorage.removeItem("user");
+    window.location.href = "/";
   };
 
   if (!user) {
@@ -107,7 +114,7 @@ const Profile = () => {
             <label className="text-zinc-400">На сколько времени:</label>
             <select
               value={statusDuration}
-              onChange={(e) => setStatusDuration(e.target.value)}
+              onChange={(e) => setStatusDuration(Number(e.target.value))}
               className="w-full mt-1 p-2 rounded bg-zinc-800 border border-zinc-700"
             >
               <option value={1}>1 час</option>
@@ -115,11 +122,27 @@ const Profile = () => {
               <option value={3}>3 часа</option>
             </select>
             <button
-              onClick={() => updateUser({ online_until: Date.now() + statusDuration * 3600 * 1000 })}
+              onClick={() => {
+                const until = Date.now() + statusDuration * 60 * 60 * 1000;
+                updateUser({
+                  online_until: until,
+                  status_duration: statusDuration
+                });
+
+                const label = `${statusDuration} ${statusDuration === 1 ? "час" : "часа"}`;
+                setStatusMessage(`Статус подтверждён на ${label}`);
+                setTimeout(() => setStatusMessage(""), 4000);
+              }}
               className="mt-2 w-full bg-green-600 hover:bg-green-700 py-2 rounded-xl font-bold transition"
             >
               Подтвердить статус
             </button>
+
+            {statusMessage && (
+              <p className="mt-2 text-green-400 text-sm text-center animate-pulse">
+                {statusMessage}
+              </p>
+            )}
           </div>
         )}
 
@@ -129,7 +152,9 @@ const Profile = () => {
             <button
               onClick={() => updateUser({ privacy: "nearby" })}
               className={`w-full py-2 rounded-xl font-semibold border ${
-                user.privacy === "nearby" ? "bg-white text-black" : "bg-zinc-800 text-white hover:bg-zinc-700"
+                user.privacy === "nearby"
+                  ? "bg-white text-black"
+                  : "bg-zinc-800 text-white hover:bg-zinc-700"
               }`}
             >
               Онлайн для тех кто рядом
@@ -137,7 +162,9 @@ const Profile = () => {
             <button
               onClick={() => updateUser({ privacy: "district" })}
               className={`w-full py-2 rounded-xl font-semibold border ${
-                user.privacy === "district" ? "bg-white text-black" : "bg-zinc-800 text-white hover:bg-zinc-700"
+                user.privacy === "district"
+                  ? "bg-white text-black"
+                  : "bg-zinc-800 text-white hover:bg-zinc-700"
               }`}
             >
               Онлайн для своего района
@@ -149,17 +176,14 @@ const Profile = () => {
       <div className="mt-8 flex flex-col gap-4 w-full max-w-md">
         <button
           onClick={() => window.location.href = "/people"}
-          className="bg-green-600 hover:bg-green-700 text-white py-3 rounded-xl font-bold transition"
+          className="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-xl font-bold transition"
         >
           Найти собеседника
         </button>
 
         <button
-          onClick={() => {
-            localStorage.removeItem("user");
-            window.location.href = "/";
-          }}
-          className="bg-zinc-900 hover:bg-zinc-800 text-white py-3 rounded-xl font-semibold border border-zinc-700 transition"
+          onClick={resetProfile}
+          className="w-full bg-zinc-900 hover:bg-zinc-800 text-white py-3 rounded-xl font-semibold border border-zinc-700 transition"
         >
           📝 Заполнить заново
         </button>

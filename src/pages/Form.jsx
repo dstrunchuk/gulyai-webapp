@@ -16,39 +16,31 @@ const Form = () => {
   const [vibe, setVibe] = useState("");
   const [photo, setPhoto] = useState(null);
 
-  useEffect(() => {
-    const existing = localStorage.getItem("user");
-    if (existing) {
-      const user = JSON.parse(existing);
-      const createdAt = new Date(user.created_at);
-      const daysPassed = Math.floor((Date.now() - createdAt.getTime()) / (1000 * 60 * 60 * 24));
-      if (daysPassed < 30) {
-        if (30 - daysPassed <= 5) {
-          alert(`⚠️ Внимание! Анкета будет удалена через ${30 - daysPassed} дней.`);
-        }
-        window.location.href = "/profile";
-      } else {
-        localStorage.removeItem("user");
-      }
-    }
-    setCheckingStorage(false);
-  }, []);
 
   useEffect(() => {
-    if (stage !== "loading") return;
     const tg = window.Telegram?.WebApp;
     tg?.ready();
     const id = tg?.initDataUnsafe?.user?.id;
-    console.log("Получен chat_id:", id);
-
-    if (id) {
-      setChatId(id);
-      setStage("form");
-    } else {
-      const timeout = setTimeout(() => setStage("failed"), 5000);
-      return () => clearTimeout(timeout);
-    }
-  }, [stage]);
+  
+    if (!id) return;
+  
+    fetch(`https://gulyai-backend-production.up.railway.app/api/profile/${id}`)
+      .then((res) => {
+        if (res.ok) {
+          res.json().then((profile) => {
+            localStorage.setItem("user", JSON.stringify(profile));
+            window.location.href = "/profile";
+          });
+        } else {
+          localStorage.removeItem("user");
+          setCheckingStorage(false);
+        }
+      })
+      .catch((err) => {
+        console.error("Ошибка запроса к профилю:", err);
+        setCheckingStorage(false);
+      });
+  }, []);
 
   const convertToJpeg = async (file) => {
     if (file.type === "image/heic" || file.name.toLowerCase().endsWith(".heic")) {

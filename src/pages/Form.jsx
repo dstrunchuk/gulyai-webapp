@@ -16,33 +16,64 @@ const Form = () => {
   const [vibe, setVibe] = useState("");
   const [photo, setPhoto] = useState(null);
 
-
+  // Проверка localStorage + reset
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const reset = params.get("reset");
-  
+
     if (reset === "true") {
-      setStage("loading"); // сразу переход в стадию загрузки ID
+      console.log("Режим сброса — сразу загружаем ID");
+      setStage("loading");
+      setCheckingStorage(false);
       return;
     }
-  
-    console.log("chat_id:", id);
-    setChatId(id);
-  
-    fetch(`https://gulyai-backend-production.up.railway.app/api/profile/${id}`)
-      .then((res) => {
-        if (res.ok) return res.json();
-        throw new Error("Анкета не найдена");
-      })
-      .then((profile) => {
-        localStorage.setItem("user", JSON.stringify(profile));
+
+    const existing = localStorage.getItem("user");
+    if (existing) {
+      const user = JSON.parse(existing);
+      const createdAt = new Date(user.created_at);
+      const daysPassed = Math.floor((Date.now() - createdAt.getTime()) / (1000 * 60 * 60 * 24));
+      if (daysPassed < 30) {
+        if (30 - daysPassed <= 5) {
+          alert(`⚠️ Внимание! Анкета будет удалена через ${30 - daysPassed} дней.`);
+        }
         window.location.href = "/profile";
-      })
-      .catch((err) => {
-        console.warn("Анкета не найдена:", err.message);
-        setCheckingStorage(false); // остаёмся на intro
-      });
+      } else {
+        localStorage.removeItem("user");
+      }
+    }
+
+    setCheckingStorage(false);
   }, []);
+
+  // Загружаем Telegram ID
+  useEffect(() => {
+    if (stage !== "loading") return;
+    const tg = window.Telegram?.WebApp;
+    tg?.ready();
+    const id = tg?.initDataUnsafe?.user?.id;
+    console.log("Получен chat_id:", id);
+
+    if (id) {
+      setChatId(id);
+
+      fetch(`https://gulyai-backend-production.up.railway.app/api/profile/${id}`)
+        .then((res) => {
+          if (!res.ok) throw new Error("Профиль не найден");
+          return res.json();
+        })
+        .then((profile) => {
+          localStorage.setItem("user", JSON.stringify(profile));
+          window.location.href = "/profile";
+        })
+        .catch(() => {
+          setStage("form");
+        });
+    } else {
+      const timeout = setTimeout(() => setStage("failed"), 5000);
+      return () => clearTimeout(timeout);
+    }
+  }, [stage]);
 
   const convertToJpeg = async (file) => {
     if (file.type === "image/heic" || file.name.toLowerCase().endsWith(".heic")) {
@@ -97,7 +128,6 @@ const Form = () => {
         created_at: new Date().toISOString(),
       };
 
-      console.log("Сохраняем в localStorage:", profileData);
       localStorage.setItem("user", JSON.stringify(profileData));
       window.location.href = "/profile";
     } catch (err) {
@@ -125,8 +155,7 @@ const Form = () => {
         </ul>
         <div className="bg-[#2c2c2e] p-4 rounded-xl border border-gray-600 max-w-md text-sm">
           <p>
-            Анкета будет храниться <strong>30 дней</strong> с момента заполнения. После — удаляется
-            автоматически, и потребуется заполнить заново.
+            Анкета будет храниться <strong>30 дней</strong>. После — удаляется автоматически.
           </p>
         </div>
         <button

@@ -9,20 +9,20 @@ function AppWrapper() {
   useEffect(() => {
     const stored = localStorage.getItem("user");
     console.log("localStorage:", stored);
-
+  
     if (stored) {
       try {
         const parsed = JSON.parse(stored);
-
+  
         if (!parsed.chat_id) {
           console.warn("chat_id отсутствует, чистим localStorage");
           localStorage.removeItem("user");
           navigate("/");
           return;
         }
-
+  
         console.log("Проверяем профиль по chat_id:", parsed.chat_id);
-
+  
         fetch(`https://gulyai-backend-production.up.railway.app/api/profile/${parsed.chat_id}`)
           .then((res) => {
             console.log("Ответ от бэка:", res.status);
@@ -30,6 +30,9 @@ function AppWrapper() {
               console.warn("Профиль не найден. Удаляем localStorage");
               localStorage.removeItem("user");
               navigate("/");
+            } else {
+              // вот этот переход решает всю проблему
+              navigate("/profile");
             }
           })
           .catch((err) => {

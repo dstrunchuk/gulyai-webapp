@@ -66,6 +66,7 @@ const Form = () => {
 
   const handleSubmit = async () => {
     setSubmitting(true);
+  
     const formData = new FormData();
     formData.append("name", name);
     formData.append("address", address);
@@ -75,15 +76,29 @@ const Form = () => {
     formData.append("vibe", vibe);
     formData.append("chat_id", chatId);
     if (photo) formData.append("photo", photo);
-
+  
     try {
       const res = await fetch("https://gulyai-backend-production.up.railway.app/api/form", {
         method: "POST",
         body: formData,
       });
+  
       const result = await res.json();
-      const profileData = Object.fromEntries(formData.entries());
-      profileData.photo_url = result.photo_url;
+  
+      if (!result.ok) throw new Error("Ошибка с сервера");
+  
+      const profileData = {
+        name,
+        address,
+        age,
+        interests,
+        activity,
+        vibe,
+        chat_id: chatId,
+        photo_url: result.photo_url,
+        created_at: new Date().toISOString(),
+      };
+  
       localStorage.setItem("user", JSON.stringify(profileData));
       window.location.href = "/profile";
     } catch (err) {

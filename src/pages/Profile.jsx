@@ -40,22 +40,9 @@ const Profile = () => {
     });
   };
 
-  const resetProfile = async () => {
-    try {
-      if (!user?.chat_id) return;
-
-      await fetch("https://gulyai-backend-production.up.railway.app/api/delete-profile", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ chat_id: user.chat_id }),
-      });
-
-      localStorage.removeItem("user");
-      navigate("/");
-    } catch (err) {
-      console.error("Ошибка при удалении анкеты:", err);
-      alert("❌ Не удалось удалить анкету. Попробуй позже.");
-    }
+  const resetProfile = () => {
+    localStorage.removeItem("user");
+    navigate("/?reset=true"); // передаём флаг
   };
 
   if (!user) {

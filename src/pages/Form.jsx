@@ -18,14 +18,11 @@ const Form = () => {
 
 
   useEffect(() => {
-    const tg = window.Telegram?.WebApp;
-    tg?.ready();
+    const params = new URLSearchParams(window.location.search);
+    const reset = params.get("reset");
   
-    const id = tg?.initDataUnsafe?.user?.id;
-    if (!id) {
-      console.warn("Telegram ID не получен");
-      setStage("intro");
-      setCheckingStorage(false);
+    if (reset === "true") {
+      setStage("loading"); // сразу переход в стадию загрузки ID
       return;
     }
   

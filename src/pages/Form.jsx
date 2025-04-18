@@ -16,7 +16,6 @@ const Form = () => {
   const [vibe, setVibe] = useState("");
   const [photo, setPhoto] = useState(null);
 
-  // Проверка localStorage
   useEffect(() => {
     const existing = localStorage.getItem("user");
     if (existing) {
@@ -40,6 +39,7 @@ const Form = () => {
     const tg = window.Telegram?.WebApp;
     tg?.ready();
     const id = tg?.initDataUnsafe?.user?.id;
+    console.log("Получен chat_id:", id);
 
     if (id) {
       setChatId(id);
@@ -65,8 +65,12 @@ const Form = () => {
   };
 
   const handleSubmit = async () => {
+    if (!chatId) {
+      alert("❌ Не удалось получить chat_id. Попробуй перезапустить WebApp.");
+      return;
+    }
+
     setSubmitting(true);
-  
     const formData = new FormData();
     formData.append("name", name);
     formData.append("address", address);
@@ -76,17 +80,17 @@ const Form = () => {
     formData.append("vibe", vibe);
     formData.append("chat_id", chatId);
     if (photo) formData.append("photo", photo);
-  
+
     try {
       const res = await fetch("https://gulyai-backend-production.up.railway.app/api/form", {
         method: "POST",
         body: formData,
       });
-  
+
       const result = await res.json();
-  
+
       if (!result.ok) throw new Error("Ошибка с сервера");
-  
+
       const profileData = {
         name,
         address,
@@ -98,7 +102,8 @@ const Form = () => {
         photo_url: result.photo_url,
         created_at: new Date().toISOString(),
       };
-  
+
+      console.log("Сохраняем в localStorage:", profileData);
       localStorage.setItem("user", JSON.stringify(profileData));
       window.location.href = "/profile";
     } catch (err) {
@@ -108,7 +113,6 @@ const Form = () => {
     }
   };
 
-  // Пока идёт проверка localStorage
   if (checkingStorage) return null;
 
   if (stage === "intro") {
@@ -128,9 +132,8 @@ const Form = () => {
         <div className="bg-[#2c2c2e] p-4 rounded-xl border border-gray-600 max-w-md text-sm">
           <p>
             Анкета будет храниться <strong>30 дней</strong> с момента заполнения. После — удаляется
-            автоматически, и потребуется заполнить заново. Чтобы не перегружать сервер.
+            автоматически, и потребуется заполнить заново.
           </p>
-          <p className="mt-2 text-gray-400">Надеемся на понимание!</p>
         </div>
         <button
           onClick={() => setStage("loading")}

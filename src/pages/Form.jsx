@@ -84,7 +84,6 @@ const Form = () => {
       const result = await res.json();
       const profileData = Object.fromEntries(formData.entries());
       profileData.photo_url = result.photo_url;
-      profileData.created_at = new Date().toISOString();
       localStorage.setItem("user", JSON.stringify(profileData));
       window.location.href = "/profile";
     } catch (err) {

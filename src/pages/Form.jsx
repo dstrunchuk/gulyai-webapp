@@ -20,25 +20,30 @@ const Form = () => {
   useEffect(() => {
     const tg = window.Telegram?.WebApp;
     tg?.ready();
-    const id = tg?.initDataUnsafe?.user?.id;
   
-    if (!id) return;
+    const id = tg?.initDataUnsafe?.user?.id;
+    if (!id) {
+      console.warn("Telegram ID не получен");
+      setStage("intro");
+      setCheckingStorage(false);
+      return;
+    }
+  
+    console.log("chat_id:", id);
+    setChatId(id);
   
     fetch(`https://gulyai-backend-production.up.railway.app/api/profile/${id}`)
       .then((res) => {
-        if (res.ok) {
-          res.json().then((profile) => {
-            localStorage.setItem("user", JSON.stringify(profile));
-            window.location.href = "/profile";
-          });
-        } else {
-          localStorage.removeItem("user");
-          setCheckingStorage(false);
-        }
+        if (res.ok) return res.json();
+        throw new Error("Анкета не найдена");
+      })
+      .then((profile) => {
+        localStorage.setItem("user", JSON.stringify(profile));
+        window.location.href = "/profile";
       })
       .catch((err) => {
-        console.error("Ошибка запроса к профилю:", err);
-        setCheckingStorage(false);
+        console.warn("Анкета не найдена:", err.message);
+        setCheckingStorage(false); // остаёмся на intro
       });
   }, []);
 

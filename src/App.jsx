@@ -1,47 +1,34 @@
-import { BrowserRouter as Router, Routes, Route, useNavigate } from "react-router-dom";
-import { useEffect } from "react";
-import Form from "./pages/Form";
-import Profile from "./pages/Profile";
-
 function AppWrapper() {
   const navigate = useNavigate();
 
   useEffect(() => {
     const stored = localStorage.getItem("user");
-    console.log("localStorage:", stored);
-  
     if (stored) {
       try {
         const parsed = JSON.parse(stored);
-  
-        if (!parsed.chat_id) {
-          console.warn("chat_id отсутствует, чистим localStorage");
+        const chatId = parsed.chat_id;
+
+        if (!chatId) {
           localStorage.removeItem("user");
           navigate("/");
           return;
         }
-  
-        console.log("Проверяем профиль по chat_id:", parsed.chat_id);
-  
-        fetch(`https://gulyai-backend-production.up.railway.app/api/profile/${parsed.chat_id}`)
+
+        fetch(`https://gulyai-backend-production.up.railway.app/api/profile/${chatId}`)
           .then((res) => {
-            console.log("Ответ от бэка:", res.status);
             if (!res.ok) {
-              console.warn("Профиль не найден. Удаляем localStorage");
               localStorage.removeItem("user");
               navigate("/");
             } else {
-              // вот этот переход решает всю проблему
+              // Анкета найдена — переходим на профиль
               navigate("/profile");
             }
           })
-          .catch((err) => {
-            console.error("Ошибка запроса:", err);
+          .catch(() => {
             localStorage.removeItem("user");
             navigate("/");
           });
-      } catch (err) {
-        console.error("Ошибка парсинга localStorage:", err);
+      } catch {
         localStorage.removeItem("user");
         navigate("/");
       }

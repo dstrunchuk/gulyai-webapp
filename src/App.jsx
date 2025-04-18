@@ -6,28 +6,42 @@ import Profile from "./pages/Profile";
 function AppWrapper() {
   const navigate = useNavigate();
 
-  uuseEffect(() => {
+  useEffect(() => {
     const stored = localStorage.getItem("user");
-    console.log("Проверка localStorage:", stored);
-  
+    console.log("localStorage:", stored);
+
     if (stored) {
-      const parsed = JSON.parse(stored);
-      console.log("Ищу профиль по chat_id:", parsed.chat_id);
-  
-      fetch(`https://gulyai-backend-production.up.railway.app/api/profile/${parsed.chat_id}`)
-        .then((res) => {
-          console.log("Ответ от сервера:", res.status);
-          if (!res.ok) {
-            console.warn("Профиль не найден. Удаляю localStorage");
-            localStorage.removeItem("user");
-            navigate("/");
-          }
-        })
-        .catch((err) => {
-          console.error("Ошибка при fetch:", err);
+      try {
+        const parsed = JSON.parse(stored);
+
+        if (!parsed.chat_id) {
+          console.warn("chat_id отсутствует, чистим localStorage");
           localStorage.removeItem("user");
           navigate("/");
-        });
+          return;
+        }
+
+        console.log("Проверяем профиль по chat_id:", parsed.chat_id);
+
+        fetch(`https://gulyai-backend-production.up.railway.app/api/profile/${parsed.chat_id}`)
+          .then((res) => {
+            console.log("Ответ от бэка:", res.status);
+            if (!res.ok) {
+              console.warn("Профиль не найден. Удаляем localStorage");
+              localStorage.removeItem("user");
+              navigate("/");
+            }
+          })
+          .catch((err) => {
+            console.error("Ошибка запроса:", err);
+            localStorage.removeItem("user");
+            navigate("/");
+          });
+      } catch (err) {
+        console.error("Ошибка парсинга localStorage:", err);
+        localStorage.removeItem("user");
+        navigate("/");
+      }
     }
   }, [navigate]);
 

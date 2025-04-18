@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom"; // подключили navigate
+import { useNavigate } from "react-router-dom";
 
 const Profile = () => {
   const [user, setUser] = useState(null);
   const [statusDuration, setStatusDuration] = useState(1);
   const [now, setNow] = useState(Date.now());
   const [statusMessage, setStatusMessage] = useState("");
-  const navigate = useNavigate(); // инициализировали navigate
+  const navigate = useNavigate();
 
   useEffect(() => {
     document.documentElement.classList.add("dark");
@@ -17,7 +17,7 @@ const Profile = () => {
       setStatusDuration(parsed.status_duration || 1);
     }
 
-    const interval = setInterval(() => setNow(Date.now()), 60 * 1000);
+    const interval = setInterval(() => setNow(Date.now()), 60000);
     return () => clearInterval(interval);
   }, []);
 
@@ -42,7 +42,7 @@ const Profile = () => {
 
   const resetProfile = () => {
     localStorage.removeItem("user");
-    navigate("/"); // вот тут корректный переход без перезагрузки
+    navigate("/", { replace: true });
   };
 
   if (!user) {

@@ -1,3 +1,8 @@
+import { BrowserRouter as Router, Routes, Route, useNavigate } from "react-router-dom";
+import { useEffect } from "react";
+import Form from "./pages/Form";
+import Profile from "./pages/Profile";
+
 function AppWrapper() {
   const navigate = useNavigate();
 

@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom"; // подключили navigate
 
 const Profile = () => {
   const [user, setUser] = useState(null);
   const [statusDuration, setStatusDuration] = useState(1);
   const [now, setNow] = useState(Date.now());
   const [statusMessage, setStatusMessage] = useState("");
+  const navigate = useNavigate(); // инициализировали navigate
 
   useEffect(() => {
     document.documentElement.classList.add("dark");
@@ -19,7 +21,6 @@ const Profile = () => {
     return () => clearInterval(interval);
   }, []);
 
-  // Сброс онлайн-статуса по истечению времени
   useEffect(() => {
     if (!user?.online_until) return;
     if (now > user.online_until && user.status === "online") {
@@ -41,7 +42,7 @@ const Profile = () => {
 
   const resetProfile = () => {
     localStorage.removeItem("user");
-    window.location.href = "/";
+    navigate("/"); // вот тут корректный переход без перезагрузки
   };
 
   if (!user) {
@@ -175,7 +176,7 @@ const Profile = () => {
 
       <div className="mt-8 flex flex-col gap-4 w-full max-w-md">
         <button
-          onClick={() => window.location.href = "/people"}
+          onClick={() => navigate("/people")}
           className="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-xl font-bold transition"
         >
           Найти собеседника

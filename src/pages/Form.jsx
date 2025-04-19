@@ -24,11 +24,15 @@ const Form = () => {
     tg?.ready();
   
     const id = tg?.initDataUnsafe?.user?.id;
-    if (!id) {
+    if (id) {
+      console.log("Получен Telegram ID:", id);
+      setChatId(id);
+      setStage("form");
+      setCheckingStorage(false);
+    } else {
       console.warn("Telegram ID не получен");
       setStage("intro");
       setCheckingStorage(false);
-      return;
     }
   
     setChatId(id);

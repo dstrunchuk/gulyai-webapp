@@ -284,8 +284,10 @@ const Form = () => {
   
         <div className="mt-6 flex justify-center">
           <button
-            onClick={() => setStage("intro")}
-            className="bg-gray-700 text-white py-2 px-6 rounded-xl hover:bg-gray-600"
+            onClick={() => {
+              window.location.href = "/?reset=true";
+            }}
+            className="mt-2 bg-white text-black font-semibold py-2 px-6 rounded-xl hover:bg-gray-200 transition"
           >
             ← Назад
           </button>

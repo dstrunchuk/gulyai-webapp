@@ -17,12 +17,9 @@ body {
 #root {
   @apply min-h-screen bg-[#1c1c1e];
 }
-html, body {
+html, body, #root {
   height: 100%;
   overflow: hidden;
-  margin: 0;
-  padding: 0;
-  background-color: #1c1c1e;
 }
 
 #root {
@@ -31,6 +28,11 @@ html, body {
 }
 .scrollable-page {
   height: 100vh;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.profile-scroll {
+  height: 100%;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
 }

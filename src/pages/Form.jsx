@@ -4,11 +4,11 @@ import { motion } from "framer-motion";
 
 const Form = () => {
   const [stage, setStage] = useState("intro");
+  const [checkingStorage, setCheckingStorage] = useState(true);
   const [chatId, setChatId] = useState(null);
   const [lat, setLat] = useState(null);
   const [lon, setLon] = useState(null);
   const [submitting, setSubmitting] = useState(false);
-  const [checkingStorage, setCheckingStorage] = useState(true);
 
   const [name, setName] = useState("");
   const [address, setAddress] = useState("");
@@ -201,7 +201,7 @@ const Form = () => {
       </div>
     );
   }
-  
+
   if (stage === "form") {
     return (
       <motion.div
@@ -298,5 +298,6 @@ const Form = () => {
       </motion.div>
     );
   }
+  return null;
 }
 export default Form;

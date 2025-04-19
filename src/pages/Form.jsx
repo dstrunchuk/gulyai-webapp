@@ -179,7 +179,7 @@ const Form = () => {
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
-        className="min-h-screen flex flex-col justify-center items-center px-6 bg-[#1c1c1e] text-white text-center"
+        className="min-h-screen flex flex-col justify-center items-center px-6 pb-0 bg-[#1c1c1e] text-white text-center overflow-hidden"
       >
         <h1 className="text-3xl font-bold mb-6">Прежде чем начать</h1>
         <ul className="text-lg space-y-3 mb-8">

@@ -18,63 +18,44 @@ const Form = () => {
 
   // Проверка localStorage + reset
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const reset = params.get("reset");
-
-    if (reset === "true") {
-      console.log("Режим сброса — сразу загружаем ID");
-      setStage("loading");
+    const tg = window.Telegram?.WebApp;
+    tg?.ready();
+  
+    const id = tg?.initDataUnsafe?.user?.id;
+    if (!id) {
+      console.warn("Telegram ID не получен");
+      setStage("intro");
       setCheckingStorage(false);
       return;
     }
-
-    const existing = localStorage.getItem("user");
-    if (existing) {
-      const user = JSON.parse(existing);
-      const createdAt = new Date(user.created_at);
-      const daysPassed = Math.floor((Date.now() - createdAt.getTime()) / (1000 * 60 * 60 * 24));
-      if (daysPassed < 30) {
-        if (30 - daysPassed <= 5) {
-          alert(`⚠️ Внимание! Анкета будет удалена через ${30 - daysPassed} дней.`);
-        }
-        window.location.href = "/profile";
-      } else {
-        localStorage.removeItem("user");
-      }
-    }
-
-    setCheckingStorage(false);
-  }, []);
-
-  // Загружаем Telegram ID
-  useEffect(() => {
-    if (stage !== "loading") return;
-    const tg = window.Telegram?.WebApp;
-    tg?.ready();
-    const id = tg?.initDataUnsafe?.user?.id;
-    console.log("Получен chat_id:", id);
-
-    if (id) {
-      setChatId(id);
-
+  
+    console.log("chat_id:", id);
+    setChatId(id);
+  
+    const params = new URLSearchParams(window.location.search);
+    const isReset = params.get("reset") === "true";
+  
+    if (isReset) {
+      // При reset — открываем форму без проверки анкеты
+      setStage("form");
+      setCheckingStorage(false);
+    } else {
+      // Иначе — проверка, есть ли анкета
       fetch(`https://gulyai-backend-production.up.railway.app/api/profile/${id}`)
         .then((res) => {
-          if (!res.ok) throw new Error("Профиль не найден");
+          if (!res.ok) throw new Error("Анкета не найдена");
           return res.json();
         })
         .then((profile) => {
           localStorage.setItem("user", JSON.stringify(profile));
           window.location.href = "/profile";
         })
-        .catch(() => {
-          setStage("form");
+        .catch((err) => {
+          console.warn("Анкета не найдена:", err.message);
+          setCheckingStorage(false);
         });
-    } else {
-      const timeout = setTimeout(() => setStage("failed"), 5000);
-      return () => clearTimeout(timeout);
     }
-  }, [stage]);
-
+  }, []);
   const convertToJpeg = async (file) => {
     if (file.type === "image/heic" || file.name.toLowerCase().endsWith(".heic")) {
       const blob = await heic2any({ blob: file, toType: "image/jpeg", quality: 0.8 });

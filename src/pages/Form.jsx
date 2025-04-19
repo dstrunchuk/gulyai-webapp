@@ -48,33 +48,48 @@ const Form = () => {
   
     const params = new URLSearchParams(window.location.search);
     const isReset = params.get("reset") === "true";
-  
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        async (position) => {
-          const lat = position.coords.latitude;
-          const lon = position.coords.longitude;
-          setLatitude(lat);
-          setLongitude(lon);
-  
-          try {
-            const res = await fetch(
-              `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`
-            );
-            const data = await res.json();
-            const { city, town, village, road, state, suburb, city_district } = data.address;
-            const area = suburb || city_district || "";
-            const fullAddress = `${city || town || village || ""}, ${area}, ${road || ""}, ${state || ""}`;
-            setAddress(fullAddress);
-          } catch (err) {
-            console.warn("Не удалось получить адрес:", err);
-          }
-        },
-        (err) => {
-          console.error("Ошибка геолокации:", err);
+    const handleRefreshLocation = async () => {
+      if (!navigator.geolocation) {
+        alert("Геолокация не поддерживается");
+        return;
+      }
+    
+      navigator.geolocation.getCurrentPosition(async (position) => {
+        const lat = position.coords.latitude;
+        const lon = position.coords.longitude;
+    
+        try {
+          const res = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`
+          );
+          const data = await res.json();
+          const { city, town, village, road, state, suburb, city_district } = data.address;
+          const area = suburb || city_district || "";
+          const fullAddress = `${city || town || village || ""}, ${area}, ${road || ""}, ${state || ""}`;
+    
+          // Обновляем в Supabase
+          await fetch("https://gulyai-backend-production.up.railway.app/api/update-profile", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              chat_id: user.chat_id,
+              address: fullAddress,
+              latitude: lat,
+              longitude: lon
+            }),
+          });
+    
+          // Обновляем локально
+          const updated = { ...user, address: fullAddress, latitude: lat, longitude: lon };
+          localStorage.setItem("user", JSON.stringify(updated));
+          setUser(updated);
+    
+        } catch (err) {
+          alert("Ошибка при получении адреса");
+          console.error(err);
         }
-      );
-    }
+      });
+    };
   
     if (isReset) {
       console.log("Режим reset — открываем форму");

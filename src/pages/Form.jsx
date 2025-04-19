@@ -86,20 +86,22 @@ const Form = () => {
     }
   
     // Проверка анкеты
-    fetch(`https://gulyai-backend-production.up.railway.app/api/profile/${id}`)
-      .then((res) => {
-        if (!res.ok) throw new Error("Анкета не найдена");
-        return res.json();
-      })
-      .then((profile) => {
-        localStorage.setItem("user", JSON.stringify(profile));
-        window.location.href = "/profile";
-      })
-      .catch((err) => {
-        console.warn("Анкета не найдена:", err.message);
-        setStage("form");
-        setCheckingStorage(false);
-      });
+    setTimeout(() => {
+      fetch(`https://gulyai-backend-production.up.railway.app/api/profile/${id}`)
+        .then((res) => {
+          if (!res.ok) throw new Error("Анкета не найдена");
+          return res.json();
+        })
+        .then((profile) => {
+          localStorage.setItem("user", JSON.stringify(profile));
+          window.location.href = "/profile";
+        })
+        .catch((err) => {
+          console.warn("Анкета не найдена:", err.message);
+          setStage("form");
+          setCheckingStorage(false);
+        });
+    }, 1000); // даём 1 секунду геолокации и адресу
   }, [stage]);
 
   const convertToJpeg = async (file) => {

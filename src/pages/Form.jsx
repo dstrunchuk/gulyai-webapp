@@ -6,9 +6,9 @@ const Form = () => {
   const [stage, setStage] = useState("intro");
   const [checkingStorage, setCheckingStorage] = useState(true);
   const [chatId, setChatId] = useState(null);
-  const [lat, setLat] = useState(null);
-  const [lon, setLon] = useState(null);
   const [submitting, setSubmitting] = useState(false);
+  const [latitude, setLatitude] = useState(null);
+  const [longitude, setLongitude] = useState(null);
 
   const [name, setName] = useState("");
   const [address, setAddress] = useState("");
@@ -17,8 +17,7 @@ const Form = () => {
   const [activity, setActivity] = useState("");
   const [vibe, setVibe] = useState("");
   const [photo, setPhoto] = useState(null);
-  const [latitude, setLatitude] = useState(null);
-  const [longitude, setLongitude] = useState(null);
+  
 
   // Получаем геолокацию
   useEffect(() => {
@@ -31,40 +30,66 @@ const Form = () => {
       const id = tg?.initDataUnsafe?.user?.id;
       console.log("Пробуем получить Telegram ID:", id);
   
-      if (id) {
-        setChatId(id);
+      if (!id) {
+        setTimeout(checkId, 500); // Повторяем, если ID ещё нет
+        return;
+      }
   
-        const params = new URLSearchParams(window.location.search);
-        const isReset = params.get("reset") === "true";
+      setChatId(id);
+      const params = new URLSearchParams(window.location.search);
+      const isReset = params.get("reset") === "true";
   
-        if (isReset) {
-          console.log("Режим reset — показываем форму.");
+      // 1. Получаем геолокацию
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          async (position) => {
+            const lat = position.coords.latitude;
+            const lon = position.coords.longitude;
+            setLatitude(lat);
+            setLongitude(lon);
+  
+            try {
+              const res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`);
+              const data = await res.json();
+              const { city, town, village, road, state } = data.address;
+              const fullAddress = `${city || town || village || ""}, ${road || ""}, ${state || ""}`;
+              setAddress(fullAddress);
+            } catch (err) {
+              console.warn("Не удалось получить адрес по координатам", err);
+            }
+          },
+          (error) => {
+            console.error("Ошибка геолокации:", error);
+          }
+        );
+      }
+  
+      // 2. Обработка reset=true
+      if (isReset) {
+        console.log("Режим reset — показываем форму");
+        setStage("form");
+        setCheckingStorage(false);
+        return;
+      }
+  
+      // 3. Проверка анкеты
+      fetch(`https://gulyai-backend-production.up.railway.app/api/profile/${id}`)
+        .then((res) => {
+          if (!res.ok) throw new Error("Анкета не найдена");
+          return res.json();
+        })
+        .then((profile) => {
+          localStorage.setItem("user", JSON.stringify(profile));
+          window.location.href = "/profile";
+        })
+        .catch((err) => {
+          console.warn("Анкета не найдена:", err.message);
           setStage("form");
           setCheckingStorage(false);
-          return;
-        }
-  
-        fetch(`https://gulyai-backend-production.up.railway.app/api/profile/${id}`)
-          .then((res) => {
-            if (!res.ok) throw new Error("Анкета не найдена");
-            return res.json();
-          })
-          .then((profile) => {
-            localStorage.setItem("user", JSON.stringify(profile));
-            window.location.href = "/profile";
-          })
-          .catch((err) => {
-            console.warn("Анкета не найдена:", err.message);
-            setStage("form");
-            setCheckingStorage(false);
-          });
-      } else {
-        console.warn("Telegram ID не получен. Пробуем ещё раз через 500ms...");
-        setTimeout(checkId, 500);
-      }
+        });
     };
   
-    checkId();
+    checkId(); // Запускаем
   }, [stage]);
 
   const convertToJpeg = async (file) => {
@@ -298,6 +323,5 @@ const Form = () => {
       </motion.div>
     );
   }
-  return null;
 }
 export default Form;

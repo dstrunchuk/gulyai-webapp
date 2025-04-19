@@ -73,18 +73,15 @@ const Form = () => {
             );
             const data = await res.json();
   
-            const { city, town, village, suburb, road, state } = data.address;
+            const { city, town, village, suburb, road } = data.address;
   
-            // Если есть suburb — берём его, если нет — fallback к display_name
-            let formatted = "";
-            if (suburb || road || state) {
-              formatted = [suburb || city || town || village, road, state]
-                .filter(Boolean)
-                .join(", ");
-            } else {
-              formatted = data.display_name;
-            }
+            const locationParts = [
+              city || town || village,  // Город
+              suburb,                   // Район
+              road                      // Улица
+            ].filter(Boolean);
   
+            const formatted = locationParts.join(", ");
             console.log("📍 Адрес:", formatted);
             setAddress(formatted);
           } catch (error) {

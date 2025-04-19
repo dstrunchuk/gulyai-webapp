@@ -30,8 +30,6 @@ const Form = () => {
 
   // Получаем геолокацию
   useEffect(() => {
-    if (stage !== "loading") return;
-  
     const tg = window.Telegram?.WebApp;
     tg?.ready();
   
@@ -48,46 +46,34 @@ const Form = () => {
   
     const params = new URLSearchParams(window.location.search);
     const isReset = params.get("reset") === "true";
-    const handleUpdateAddress = () => {
-      if (!navigator.geolocation) {
-        alert("Геолокация не поддерживается браузером.");
-        return;
-      }
-    
-      navigator.geolocation.getCurrentPosition(async (position) => {
-        const lat = position.coords.latitude;
-        const lon = position.coords.longitude;
-    
-        try {
-          const res = await fetch(
-            `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`
-          );
-          const data = await res.json();
-          const { city, town, village, road, state, suburb, city_district } = data.address;
-          const area = suburb || city_district || "";
-          const fullAddress = `${city || town || village || ""}, ${area}, ${road || ""}, ${state || ""}`;
-    
-          // Отправка обновлённого адреса на сервер
-          await fetch("https://gulyai-backend-production.up.railway.app/api/update-profile", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              chat_id: user.chat_id,
-              address: fullAddress,
-              latitude: lat,
-              longitude: lon,
-            }),
-          });
-    
-          const updated = { ...user, address: fullAddress, latitude: lat, longitude: lon };
-          localStorage.setItem("user", JSON.stringify(updated));
-          setUser(updated);
-        } catch (error) {
-          console.error("Ошибка при обновлении адреса:", error);
-          alert("Не удалось обновить адрес.");
+  
+    // Получаем геолокацию и адрес
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          const lat = position.coords.latitude;
+          const lon = position.coords.longitude;
+          setLatitude(lat);
+          setLongitude(lon);
+  
+          try {
+            const res = await fetch(
+              `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`
+            );
+            const data = await res.json();
+            const { city, town, village, road, state, suburb, city_district } = data.address;
+            const area = suburb || city_district || "";
+            const fullAddress = `${city || town || village || ""}, ${area}, ${road || ""}, ${state || ""}`;
+            setAddress(fullAddress);
+          } catch (err) {
+            console.warn("Не удалось получить адрес по координатам:", err);
+          }
+        },
+        (err) => {
+          console.error("Ошибка геолокации:", err);
         }
-      });
-    };
+      );
+    }
   
     if (isReset) {
       console.log("Режим reset — открываем форму");
@@ -96,7 +82,7 @@ const Form = () => {
       return;
     }
   
-    // Проверяем анкету
+    // Проверка анкеты
     fetch(`https://gulyai-backend-production.up.railway.app/api/profile/${id}`)
       .then((res) => {
         if (!res.ok) throw new Error("Анкета не найдена");
@@ -111,7 +97,7 @@ const Form = () => {
         setStage("form");
         setCheckingStorage(false);
       });
-  }, [stage]);
+  }, []);
 
   const convertToJpeg = async (file) => {
     if (file.type === "image/heic" || file.name.toLowerCase().endsWith(".heic")) {

@@ -48,9 +48,9 @@ const Form = () => {
   
     const params = new URLSearchParams(window.location.search);
     const isReset = params.get("reset") === "true";
-    const handleRefreshLocation = async () => {
+    const handleUpdateAddress = () => {
       if (!navigator.geolocation) {
-        alert("Геолокация не поддерживается");
+        alert("Геолокация не поддерживается браузером.");
         return;
       }
     
@@ -67,7 +67,7 @@ const Form = () => {
           const area = suburb || city_district || "";
           const fullAddress = `${city || town || village || ""}, ${area}, ${road || ""}, ${state || ""}`;
     
-          // Обновляем в Supabase
+          // Отправка обновлённого адреса на сервер
           await fetch("https://gulyai-backend-production.up.railway.app/api/update-profile", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -75,18 +75,16 @@ const Form = () => {
               chat_id: user.chat_id,
               address: fullAddress,
               latitude: lat,
-              longitude: lon
+              longitude: lon,
             }),
           });
     
-          // Обновляем локально
           const updated = { ...user, address: fullAddress, latitude: lat, longitude: lon };
           localStorage.setItem("user", JSON.stringify(updated));
           setUser(updated);
-    
-        } catch (err) {
-          alert("Ошибка при получении адреса");
-          console.error(err);
+        } catch (error) {
+          console.error("Ошибка при обновлении адреса:", error);
+          alert("Не удалось обновить адрес.");
         }
       });
     };

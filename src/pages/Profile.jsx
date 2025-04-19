@@ -107,8 +107,7 @@ const Profile = () => {
           <p><span className="text-zinc-400">Адрес:</span> {user.address}</p>
           <button
             onClick={handleUpdateAddress}
-            className="text-sm text-blue-400 hover:underline mt-1"
-          >
+            className="ml-3 text-sm text-blue-400 underline">
             Обновить
           </button>
         </div>

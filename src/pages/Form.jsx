@@ -28,71 +28,68 @@ const Form = () => {
     const tg = window.Telegram?.WebApp;
     tg?.ready();
   
-    const checkId = () => {
-      const id = tg?.initDataUnsafe?.user?.id;
-      console.log("Пробуем получить Telegram ID:", id);
+    const id = tg?.initDataUnsafe?.user?.id;
+    console.log("Получен Telegram ID:", id);
   
-      if (!id) {
-        setTimeout(checkId, 500);
-        return;
-      }
+    if (!id) {
+      console.warn("Telegram ID не получен. Переход в failed через 5 сек...");
+      const timeout = setTimeout(() => setStage("failed"), 5000);
+      return () => clearTimeout(timeout);
+    }
   
-      setChatId(id);
+    setChatId(id);
   
-      const params = new URLSearchParams(window.location.search);
-      const isReset = params.get("reset") === "true";
+    const params = new URLSearchParams(window.location.search);
+    const isReset = params.get("reset") === "true";
   
-      // Геолокация
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-          async (position) => {
-            const lat = position.coords.latitude;
-            const lon = position.coords.longitude;
-            setLatitude(lat);
-            setLongitude(lon);
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          const lat = position.coords.latitude;
+          const lon = position.coords.longitude;
+          setLatitude(lat);
+          setLongitude(lon);
   
-            try {
-              const res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`);
-              const data = await res.json();
-              const { city, town, village, road, state } = data.address;
-              const fullAddress = `${city || town || village || ""}, ${road || ""}, ${state || ""}`;
-              setAddress(fullAddress);
-            } catch (err) {
-              console.warn("Не удалось получить адрес по координатам", err);
-            }
-          },
-          (error) => {
-            console.error("Ошибка геолокации:", error);
+          try {
+            const res = await fetch(
+              `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`
+            );
+            const data = await res.json();
+            const { city, town, village, road, state } = data.address;
+            const fullAddress = `${city || town || village || ""}, ${road || ""}, ${state || ""}`;
+            setAddress(fullAddress);
+          } catch (err) {
+            console.warn("Не удалось получить адрес:", err);
           }
-        );
-      }
+        },
+        (err) => {
+          console.error("Ошибка геолокации:", err);
+        }
+      );
+    }
   
-      // Reset
-      if (isReset) {
-        console.log("Режим reset — открываем форму");
+    if (isReset) {
+      console.log("Режим reset — открываем форму");
+      setStage("form");
+      setCheckingStorage(false);
+      return;
+    }
+  
+    // Проверяем анкету
+    fetch(`https://gulyai-backend-production.up.railway.app/api/profile/${id}`)
+      .then((res) => {
+        if (!res.ok) throw new Error("Анкета не найдена");
+        return res.json();
+      })
+      .then((profile) => {
+        localStorage.setItem("user", JSON.stringify(profile));
+        window.location.href = "/profile";
+      })
+      .catch((err) => {
+        console.warn("Анкета не найдена:", err.message);
         setStage("form");
         setCheckingStorage(false);
-        return;
-      }
-  
-      // Проверка анкеты
-      fetch(`https://gulyai-backend-production.up.railway.app/api/profile/${id}`)
-        .then((res) => {
-          if (!res.ok) throw new Error("Анкета не найдена");
-          return res.json();
-        })
-        .then((profile) => {
-          localStorage.setItem("user", JSON.stringify(profile));
-          window.location.href = "/profile";
-        })
-        .catch((err) => {
-          console.warn("Анкета не найдена:", err.message);
-          setStage("form");
-          setCheckingStorage(false);
-        });
-    };
-  
-    checkId();
+      });
   }, [stage]);
 
   const convertToJpeg = async (file) => {

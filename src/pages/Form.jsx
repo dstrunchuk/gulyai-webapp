@@ -31,15 +31,16 @@ const Form = () => {
       console.log("Пробуем получить Telegram ID:", id);
   
       if (!id) {
-        setTimeout(checkId, 500); // Повторяем, если ID ещё нет
+        setTimeout(checkId, 500);
         return;
       }
   
       setChatId(id);
+  
       const params = new URLSearchParams(window.location.search);
       const isReset = params.get("reset") === "true";
   
-      // 1. Получаем геолокацию
+      // Геолокация
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
           async (position) => {
@@ -64,15 +65,15 @@ const Form = () => {
         );
       }
   
-      // 2. Обработка reset=true
+      // Reset
       if (isReset) {
-        console.log("Режим reset — показываем форму");
+        console.log("Режим reset — открываем форму");
         setStage("form");
         setCheckingStorage(false);
         return;
       }
   
-      // 3. Проверка анкеты
+      // Проверка анкеты
       fetch(`https://gulyai-backend-production.up.railway.app/api/profile/${id}`)
         .then((res) => {
           if (!res.ok) throw new Error("Анкета не найдена");
@@ -89,7 +90,7 @@ const Form = () => {
         });
     };
   
-    checkId(); // Запускаем
+    checkId();
   }, [stage]);
 
   const convertToJpeg = async (file) => {

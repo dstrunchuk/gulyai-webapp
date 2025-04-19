@@ -25,67 +25,41 @@ const Form = () => {
     const tg = window.Telegram?.WebApp;
     tg?.ready();
   
-    
+    const id = tg?.initDataUnsafe?.user?.id;
+    if (!id) {
+      console.warn("Telegram ID не получен");
+      setStage("failed");
+      return;
+    }
   
-    console.log("Получен Telegram ID:", id);
     setChatId(id);
   
     const params = new URLSearchParams(window.location.search);
     const isReset = params.get("reset") === "true";
   
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        async (position) => {
-          const lat = position.coords.latitude;
-          const lon = position.coords.longitude;
-          setLat(lat);
-          setLon(lon);
-  
-          try {
-            const res = await fetch(
-              `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&addressdetails=1`
-            );
-            const data = await res.json();
-            const { city, town, village, road, state } = data.address;
-            const addressText = `${city || town || village || "Город"}, ${road || "улица"}, ${state || ""}`;
-            setAddress(addressText);
-          } catch (err) {
-            console.warn("Ошибка при получении адреса:", err);
-          }
-  
-          // Переход к форме после геолокации
-          if (isReset) {
-            console.log("Режим reset: true — открываем форму");
+    if (isReset) {
+      console.log("RESET MODE — пропускаем проверку анкеты");
+      setTimeout(() => {
+        setStage("form");
+        setCheckingStorage(false);
+      }, 100); // чуть отложим, чтобы точно применилось
+    } else {
+      fetch(`https://gulyai-backend-production.up.railway.app/api/profile/${id}`)
+        .then((res) => {
+          if (!res.ok) throw new Error("Анкета не найдена");
+          return res.json();
+        })
+        .then((profile) => {
+          localStorage.setItem("user", JSON.stringify(profile));
+          window.location.href = "/profile";
+        })
+        .catch((err) => {
+          console.warn("Анкета не найдена:", err.message);
+          setTimeout(() => {
             setStage("form");
             setCheckingStorage(false);
-          } else {
-            // Проверка анкеты
-            fetch(`https://gulyai-backend-production.up.railway.app/api/profile/${id}`)
-              .then((res) => {
-                if (!res.ok) throw new Error("Анкета не найдена");
-                return res.json();
-              })
-              .then((profile) => {
-                localStorage.setItem("user", JSON.stringify(profile));
-                window.location.href = "/profile";
-              })
-              .catch(() => {
-                console.warn("Анкета не найдена — открываем форму");
-                setStage("form");
-                setCheckingStorage(false);
-              });
-          }
-        },
-        (error) => {
-          console.error("Ошибка геолокации:", error);
-          setStage("form");
-          setCheckingStorage(false);
-        }
-      );
-    } else {
-      console.warn("Геолокация не поддерживается");
-      setStage("form");
-      setCheckingStorage(false);
+          }, 100); // чуть отложим, чтобы stage точно применился
+        });
     }
   }, []);
 

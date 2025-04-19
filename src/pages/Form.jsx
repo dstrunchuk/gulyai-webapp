@@ -73,14 +73,22 @@ const Form = () => {
             );
             const data = await res.json();
             const { city, town, village, road, state } = data.address;
-            const formatted = `${city || town || village || ""}, ${road || ""}, ${state || ""}`;
-            setAddress(formatted);
+  
+            const formattedAddress = [
+              city || town || village || "",
+              road || "",
+              state || ""
+            ]
+              .filter(Boolean)
+              .join(", ");
+  
+            setAddress(formattedAddress);
           } catch (error) {
-            console.error("Ошибка при обратном геокодировании:", error);
+            console.error("Ошибка при получении адреса:", error);
           }
         },
         (error) => {
-          console.error("Ошибка при получении геолокации:", error);
+          console.error("Ошибка геолокации:", error);
         }
       );
     }

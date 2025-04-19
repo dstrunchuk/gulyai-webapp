@@ -160,6 +160,7 @@ const Form = () => {
     }
   };
 
+  console.log("Текущий stage:", stage);
   if (checkingStorage) return null;
 
   if (stage === "intro") {

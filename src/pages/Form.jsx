@@ -20,44 +20,9 @@ const Form = () => {
 
   // Получаем геолокацию
   useEffect(() => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const { latitude, longitude } = position.coords;
-          setLatitude(latitude);
-          setLongitude(longitude);
-        },
-        (error) => {
-          console.error("Ошибка при получении геолокации:", error);
-        }
-      );
-    } else {
-      console.error("Геолокация не поддерживается этим браузером.");
-    }
-  }, []);
-
-  useEffect(() => {
-    if (latitude && longitude) {
-      fetch(
-        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&addressdetails=1`
-      )
-        .then((response) => response.json())
-        .then((data) => {
-          if (data && data.display_name) {
-            setAddress(data.display_name);
-          }
-        })
-        .catch((error) => {
-          console.error("Ошибка при обратном геокодировании:", error);
-        });
-    }
-  }, [latitude, longitude]);
-  
-  // Проверка Telegram ID + проверка/редирект анкеты
-  useEffect(() => {
     const tg = window.Telegram?.WebApp;
     tg?.ready();
-
+  
     const id = tg?.initDataUnsafe?.user?.id;
     if (!id) {
       console.warn("Telegram ID не получен");
@@ -65,15 +30,15 @@ const Form = () => {
       setCheckingStorage(false);
       return;
     }
-
+  
     setChatId(id);
-
     const params = new URLSearchParams(window.location.search);
     const isReset = params.get("reset") === "true";
-
+  
     if (isReset) {
       setStage("form");
       setCheckingStorage(false);
+      requestGeolocation();
     } else {
       fetch(`https://gulyai-backend-production.up.railway.app/api/profile/${id}`)
         .then((res) => {
@@ -86,7 +51,38 @@ const Form = () => {
         })
         .catch(() => {
           setCheckingStorage(false);
+          requestGeolocation();
         });
+    }
+  
+    function requestGeolocation() {
+      if (!navigator.geolocation) {
+        console.error("Геолокация не поддерживается этим браузером.");
+        return;
+      }
+  
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          const { latitude, longitude } = position.coords;
+          setLatitude(latitude);
+          setLongitude(longitude);
+  
+          try {
+            const res = await fetch(
+              `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&addressdetails=1`
+            );
+            const data = await res.json();
+            const { city, town, village, road, state } = data.address;
+            const formatted = `${city || town || village || ""}, ${road || ""}, ${state || ""}`;
+            setAddress(formatted);
+          } catch (error) {
+            console.error("Ошибка при обратном геокодировании:", error);
+          }
+        },
+        (error) => {
+          console.error("Ошибка при получении геолокации:", error);
+        }
+      );
     }
   }, []);
 

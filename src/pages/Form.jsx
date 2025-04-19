@@ -72,16 +72,20 @@ const Form = () => {
               `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&addressdetails=1`
             );
             const data = await res.json();
+  
             const { city, town, village, suburb, road, state } = data.address;
   
-            const locationParts = [
-              city || town || village || suburb || "",
-              road || "",
-              state || ""
-            ];
+            // Если есть suburb — берём его, если нет — fallback к display_name
+            let formatted = "";
+            if (suburb || road || state) {
+              formatted = [suburb || city || town || village, road, state]
+                .filter(Boolean)
+                .join(", ");
+            } else {
+              formatted = data.display_name;
+            }
   
-            const formatted = locationParts.filter(Boolean).join(", ");
-            console.log("📍 Адрес по координатам:", formatted);
+            console.log("📍 Адрес:", formatted);
             setAddress(formatted);
           } catch (error) {
             console.error("Ошибка при получении адреса:", error);

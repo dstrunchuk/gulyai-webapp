@@ -17,3 +17,22 @@ body {
 #root {
   @apply min-h-screen bg-[#1c1c1e];
 }
+html, body, #root {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background-color: #000; /* или твой основной цвет */
+  overflow-x: hidden;
+}
+
+body {
+  overscroll-behavior: none;
+}
+
+::-webkit-scrollbar {
+  width: 0px;
+  background: transparent;
+}
+body {
+  padding-bottom: env(safe-area-inset-bottom);
+}

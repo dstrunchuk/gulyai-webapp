@@ -60,35 +60,37 @@ const Profile = () => {
           `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`
         );
         const data = await res.json();
-        const { city, town, village, road, state } = data.address;
-        const newAddress = `${city || town || village || ""}, ${road || ""}, ${state || ""}`;
+        const { city, town, village, road, state, suburb, city_district } = data.address;
+        const area = suburb || city_district || "";
+        const fullAddress = `${city || town || village || ""}${area ? `, ${area}` : ""}${road ? `, ${road}` : ""}${state ? `, ${state}` : ""}`;
   
-        const chat_id = user?.chat_id || JSON.parse(localStorage.getItem("user"))?.chat_id;
-        if (!chat_id) {
-          alert("❌ Не найден chat_id");
-          return;
-        }
-  
-        await fetch("https://gulyai-backend-production.up.railway.app/api/update-profile", {
+        // Отправка обновлённого адреса в Supabase
+        const response = await fetch("https://gulyai-backend-production.up.railway.app/api/update-profile", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            chat_id,
-            address: newAddress,
+            chat_id: user.chat_id,
+            address: fullAddress,
             latitude: lat,
-            longitude: lon,
+            longitude: lon
           }),
         });
   
+        if (!response.ok) throw new Error("Ошибка при обновлении");
+  
+        // Обновляем localStorage и state
+        const updated = { ...user, address: fullAddress, latitude: lat, longitude: lon };
+        localStorage.setItem("user", JSON.stringify(updated));
+        setUser(updated);
+  
         alert("✅ Адрес обновлён!");
-        window.location.reload(); // Обновим страницу, чтобы отобразить обновлённый адрес
       } catch (err) {
-        alert("❌ Не удалось обновить адрес");
-        console.error(err);
+        console.error("Ошибка при обновлении адреса:", err);
+        alert("❌ Не удалось обновить адрес.");
       }
     }, (err) => {
-      alert("❌ Не удалось получить геолокацию");
-      console.error(err);
+      console.error("Геолокация не получена:", err);
+      alert("❌ Не удалось получить геолокацию.");
     });
   };
 
@@ -119,7 +121,7 @@ const Profile = () => {
           <p><span className="text-zinc-400">Адрес:</span> {user.address}</p>
           <button
             onClick={handleUpdateAddress}
-            className="ml-3 text-sm text-blue-400 underline">
+            className="ml-3 px-4 py-1 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-xl text-sm shadow-md hover:opacity-90 transition-all duration-200">
             Обновить
           </button>
         </div>

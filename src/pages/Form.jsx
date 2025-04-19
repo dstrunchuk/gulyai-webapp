@@ -24,81 +24,92 @@ const Form = () => {
     tg?.ready();
   
     const id = tg?.initDataUnsafe?.user?.id;
-    if (id) {
-      console.log("Получен Telegram ID:", id);
-      setChatId(id);
-      setStage("form");
-      setCheckingStorage(false);
-    } else {
+    if (!id) {
       console.warn("Telegram ID не получен");
       setStage("intro");
       setCheckingStorage(false);
+      return;
     }
   
     setChatId(id);
+  
     const params = new URLSearchParams(window.location.search);
     const isReset = params.get("reset") === "true";
   
-    if (isReset) {
-      setStage("form");
-      setCheckingStorage(false);
-      requestGeolocation();
-    } else {
-      fetch(`https://gulyai-backend-production.up.railway.app/api/profile/${id}`)
-        .then((res) => {
-          if (!res.ok) throw new Error("Анкета не найдена");
-          return res.json();
-        })
-        .then((profile) => {
-          localStorage.setItem("user", JSON.stringify(profile));
-          window.location.href = "/profile";
-        })
-        .catch(() => {
-          setCheckingStorage(false);
-          requestGeolocation();
-        });
-    }
-  
-    function requestGeolocation() {
-      if (!navigator.geolocation) {
-        console.error("Геолокация не поддерживается этим браузером.");
-        return;
+    const loadAddressFromCoords = async (lat, lon) => {
+      try {
+        const res = await fetch(
+          `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`
+        );
+        const data = await res.json();
+        const { city, town, village, road, state } = data.address;
+        const addressText = `${city || town || village || ""}, ${road || ""}, ${state || ""}`;
+        setAddress(addressText);
+        setLatitude(lat);
+        setLongitude(lon);
+      } catch (err) {
+        console.warn("Ошибка геокодинга:", err);
       }
+    };
   
+    const onLocationReady = (lat, lon) => {
+      if (isReset) {
+        setStage("form");
+        setCheckingStorage(false);
+        loadAddressFromCoords(lat, lon);
+      } else {
+        fetch(`https://gulyai-backend-production.up.railway.app/api/profile/${id}`)
+          .then((res) => {
+            if (!res.ok) throw new Error("Анкета не найдена");
+            return res.json();
+          })
+          .then((profile) => {
+            localStorage.setItem("user", JSON.stringify(profile));
+            window.location.href = "/profile";
+          })
+          .catch(() => {
+            setStage("form");
+            setCheckingStorage(false);
+            loadAddressFromCoords(lat, lon);
+          });
+      }
+    };
+  
+    if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
-        async (position) => {
+        (position) => {
           const { latitude, longitude } = position.coords;
-          setLatitude(latitude);
-          setLongitude(longitude);
-  
-          try {
-            const res = await fetch(
-              `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&addressdetails=1`
-            );
-            const data = await res.json();
-  
-            const { city, town, village, suburb, road } = data.address;
-  
-            const locationParts = [
-              city || town || village,  // Город
-              suburb,                   // Район
-              road                      // Улица
-            ].filter(Boolean);
-  
-            const formatted = locationParts.join(", ");
-            console.log("📍 Адрес:", formatted);
-            setAddress(formatted);
-          } catch (error) {
-            console.error("Ошибка при получении адреса:", error);
-          }
+          onLocationReady(latitude, longitude);
         },
-        (error) => {
-          console.error("Ошибка геолокации:", error);
+        (err) => {
+          console.error("Ошибка получения геолокации:", err);
+          // Даже без геолокации — идём дальше
+          if (isReset) {
+            setStage("form");
+            setCheckingStorage(false);
+          } else {
+            fetch(`https://gulyai-backend-production.up.railway.app/api/profile/${id}`)
+              .then((res) => {
+                if (!res.ok) throw new Error("Анкета не найдена");
+                return res.json();
+              })
+              .then((profile) => {
+                localStorage.setItem("user", JSON.stringify(profile));
+                window.location.href = "/profile";
+              })
+              .catch(() => {
+                setStage("form");
+                setCheckingStorage(false);
+              });
+          }
         }
       );
+    } else {
+      console.warn("Геолокация не поддерживается");
+      setStage("form");
+      setCheckingStorage(false);
     }
   }, []);
-
   const convertToJpeg = async (file) => {
     if (file.type === "image/heic" || file.name.toLowerCase().endsWith(".heic")) {
       const blob = await heic2any({ blob: file, toType: "image/jpeg", quality: 0.8 });

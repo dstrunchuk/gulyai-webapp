@@ -229,6 +229,19 @@ const Form = () => {
       </div>
     );
   }
+  if (stage === "form") {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="max-w-xl mx-auto p-4 bg-[#1c1c1e] text-white min-h-screen"
+      >
+        <h1 className="text-2xl font-bold mb-4">Заполни анкету</h1>
+        {/* форма анкеты со всеми полями */}
+      </motion.div>
+    );
+  }
 
   return (
     <div className="max-w-xl mx-auto p-4 bg-[#1c1c1e] text-white min-h-screen">

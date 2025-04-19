@@ -45,6 +45,41 @@ const Profile = () => {
     navigate("/?reset=true"); // передаём флаг
   };
 
+  const handleUpdateAddress = () => {
+    if (!navigator.geolocation) {
+      alert("Геолокация не поддерживается");
+      return;
+    }
+  
+    navigator.geolocation.getCurrentPosition(async (pos) => {
+      const lat = pos.coords.latitude;
+      const lon = pos.coords.longitude;
+  
+      try {
+        const res = await fetch(
+          `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`
+        );
+        const data = await res.json();
+        const { city, town, village, road, state } = data.address;
+        const newAddress = `${city || town || village || ""}, ${road || ""}, ${state || ""}`;
+  
+        await updateUser({
+          address: newAddress,
+          latitude: lat,
+          longitude: lon
+        });
+  
+        alert("✅ Адрес обновлён!");
+      } catch (err) {
+        alert("❌ Не удалось обновить адрес");
+        console.error(err);
+      }
+    }, (err) => {
+      alert("❌ Не удалось получить геолокацию");
+      console.error(err);
+    });
+  };
+
   if (!user) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-black text-white">
@@ -56,7 +91,7 @@ const Profile = () => {
   return (
     <div className="min-h-screen bg-black text-white p-6 flex flex-col items-center">
       <h1 className="text-3xl font-bold mb-6">Твоя анкета</h1>
-
+  
       {user.photo_url && (
         <img
           src={user.photo_url}
@@ -64,13 +99,22 @@ const Profile = () => {
           className="mb-4 w-32 h-32 object-cover rounded-full border border-gray-700"
         />
       )}
-
+  
       <div className="w-full max-w-md bg-zinc-900 p-6 rounded-2xl shadow-lg space-y-4">
         <p><span className="text-zinc-400">Имя:</span> {user.name}</p>
-        <p><span className="text-zinc-400">Адрес:</span> {user.address}</p>
+  
+        <div className="flex items-start justify-between gap-2">
+          <p><span className="text-zinc-400">Адрес:</span> {user.address}</p>
+          <button
+            onClick={handleUpdateAddress}
+            className="text-sm text-blue-400 hover:underline mt-1"
+          >
+            Обновить
+          </button>
+        </div>
+  
         <p><span className="text-zinc-400">Возраст:</span> {user.age}</p>
         <p><span className="text-zinc-400">Интересы:</span> {user.interests}</p>
-
         <div>
           <label className="text-zinc-400">Цель встречи:</label>
           <select

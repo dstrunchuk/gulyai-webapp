@@ -146,32 +146,6 @@ const Profile = () => {
             )}
           </div>
         )}
-
-        <div className="mt-4">
-          <label className="text-zinc-400">Конфиденциальность:</label>
-          <div className="mt-2 flex flex-col gap-2">
-            <button
-              onClick={() => updateUser({ privacy: "nearby" })}
-              className={`w-full py-2 rounded-xl font-semibold border ${
-                user.privacy === "nearby"
-                  ? "bg-white text-black"
-                  : "bg-zinc-800 text-white hover:bg-zinc-700"
-              }`}
-            >
-              Онлайн для тех кто рядом
-            </button>
-            <button
-              onClick={() => updateUser({ privacy: "district" })}
-              className={`w-full py-2 rounded-xl font-semibold border ${
-                user.privacy === "district"
-                  ? "bg-white text-black"
-                  : "bg-zinc-800 text-white hover:bg-zinc-700"
-              }`}
-            >
-              Онлайн для своего района
-            </button>
-          </div>
-        </div>
       </div>
 
       <div className="mt-8 flex flex-col gap-4 w-full max-w-md">
@@ -179,7 +153,7 @@ const Profile = () => {
           onClick={() => navigate("/people")}
           className="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-xl font-bold transition"
         >
-          Найти собеседника
+          Гулять
         </button>
 
         <button

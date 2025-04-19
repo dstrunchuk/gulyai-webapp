@@ -1,5 +1,3 @@
-console.log("Текущий stage:", stage);
-console.log("checkingStorage:", checkingStorage);
 import { useState, useEffect } from "react";
 import heic2any from "heic2any";
 import { motion } from "framer-motion";
@@ -19,6 +17,9 @@ const Form = () => {
   const [activity, setActivity] = useState("");
   const [vibe, setVibe] = useState("");
   const [photo, setPhoto] = useState(null);
+
+  console.log("Текущий stage:", stage);
+  console.log("checkingStorage:", checkingStorage);
   
 
   // Получаем геолокацию

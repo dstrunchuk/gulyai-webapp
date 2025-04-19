@@ -40,7 +40,7 @@ const Form = () => {
   
     if (!id) {
       console.warn("Telegram ID не получен. Переход в failed через 5 сек...");
-      const timeout = setTimeout(() => setStage("failed"), 5000);
+      const timeout = setTimeout(() => setStage("failed"), 3000);
       return () => clearTimeout(timeout);
     }
   

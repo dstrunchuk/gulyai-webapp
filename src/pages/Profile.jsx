@@ -104,9 +104,7 @@ const Profile = () => {
 
   return (
     <div className="min-h-screen max-h-screen overflow-y-auto bg-[#1c1c1e] text-white px-4 py-8 flex flex-col items-center">
-      <h1 className="text-4xl font-extrabold mb-6 text-center tracking-tight">
-        Твоя анкета
-      </h1>
+      
   
       {user.photo_url && (
         <img

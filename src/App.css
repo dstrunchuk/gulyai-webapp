@@ -1,10 +1,8 @@
 #root {
-  min-height: 100vh;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  background: #000; /* или твой цвет */
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem; /* ← УДАЛИ ЭТО */
+  text-align: center;
 }
 .logo {
   height: 6em;

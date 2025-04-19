@@ -18,9 +18,9 @@ body {
   @apply min-h-screen bg-[#1c1c1e];
 }
 html, body, #root {
-  height: 100%;
   margin: 0;
   padding: 0;
-  background-color: #1c1c1e;
+  height: 100%;
   overflow-x: hidden;
+  background-color: #1c1c1e;
 }

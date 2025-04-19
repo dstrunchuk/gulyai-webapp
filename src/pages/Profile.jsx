@@ -103,16 +103,16 @@ const Profile = () => {
   }
 
   return (
-    <div className="min-h-screen max-h-screen overflow-y-auto bg-[#1c1c1e] text-white px-4 py-6">
-      <h1 className="text-3xl font-bold mb-6">Твоя анкета</h1>
+    <div className="min-h-screen max-h-screen overflow-y-auto bg-[#1c1c1e] text-white px-4 py-6 flex flex-col items-center">
+    <h1 className="text-3xl font-bold mb-6 text-center">Твоя анкета</h1>
   
-      {user.photo_url && (
-        <img
-          src={user.photo_url}
-          alt="Фото профиля"
-          className="mb-4 w-32 h-32 object-cover rounded-full border border-gray-700"
-        />
-      )}
+    {user.photo_url && (
+      <img
+        src={user.photo_url}
+        alt="Фото профиля"
+        className="mb-6 w-32 h-32 object-cover rounded-full border border-gray-700"
+      />
+    )}
   
       <div className="w-full max-w-md bg-zinc-900 p-6 rounded-2xl shadow-lg space-y-4">
         <p><span className="text-zinc-400">Имя:</span> {user.name}</p>

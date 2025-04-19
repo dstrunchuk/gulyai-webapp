@@ -179,45 +179,52 @@ const Form = () => {
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
-        className="h-screen flex flex-col justify-center items-center px-6 pb-0 bg-[#1c1c1e] text-white text-center overflow-hidden"
+        className="h-screen flex flex-col justify-center items-center px-6 bg-gradient-to-b from-[#1c1c1e] to-[#2a2a2e] text-white text-center overflow-hidden"
       >
-        <h1 className="text-3xl font-bold mb-6">Прежде чем начать</h1>
-        <ul className="text-lg space-y-3 mb-8">
-          <li>Мы не публикуем анкеты</li>
-          <li>Никто не увидит тебя, если ты не хочешь</li>
-          <li>Ты сам(-а) выбираешь, с кем говорить</li>
-        </ul>
-        <div className="bg-[#2c2c2e] p-4 rounded-xl border border-gray-600 max-w-md text-sm">
-          <p>
-            Анкета будет храниться <strong>30 дней</strong>. После — удаляется автоматически.
-          </p>
+        <div className="bg-zinc-900 rounded-2xl shadow-lg p-6 max-w-md w-full space-y-4">
+          <ul className="text-base text-left space-y-2">
+            <li className="flex items-center gap-2">
+              <span className="text-green-400 text-lg">✓</span> Мы не публикуем анкеты
+            </li>
+            <li className="flex items-center gap-2">
+              <span className="text-green-400 text-lg">✓</span> Никто не увидит тебя без твоего согласия
+            </li>
+            <li className="flex items-center gap-2">
+              <span className="text-green-400 text-lg">✓</span> Ты сам(-а) выбираешь, с кем говорить
+            </li>
+          </ul>
+          <div className="text-sm text-gray-300 mt-4 bg-zinc-800 p-3 rounded-xl border border-zinc-700">
+            Анкета хранится <strong className="text-white">30 дней</strong>, потом удаляется.
+          </div>
+          <button
+            onClick={() => setStage("loading")}
+            className="w-full mt-4 py-3 bg-gradient-to-r from-blue-500 to-purple-500 text-white font-bold rounded-xl shadow hover:opacity-90 transition"
+          >
+            Далее
+          </button>
         </div>
-        <button
-          onClick={() => setStage("loading")}
-          className="mt-8 bg-white text-black font-bold py-2 px-6 rounded-xl hover:bg-gray-200"
-        >
-          Далее
-        </button>
       </motion.div>
     );
   }
-
+  
   if (stage === "loading") {
     return (
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="h-screen flex flex-col justify-center items-center px-6 pb-0 bg-[#1c1c1e] text-white text-center overflow-hidden"
+        className="h-screen flex flex-col justify-center items-center px-6 bg-gradient-to-b from-[#1c1c1e] to-[#2a2a2e] text-white text-center overflow-hidden"
       >
-        <p className="text-xl mb-3">⏳ Загружаем Telegram ID...</p>
-        <p className="text-sm text-gray-400 mb-6">Если не загружается — перезапусти WebApp</p>
-        <button
-          onClick={() => setStage("intro")}
-          className="mt-2 bg-white text-black font-semibold py-2 px-6 rounded-xl hover:bg-gray-200 transition"
-        >
-          ← Назад
-        </button>
+        <div className="bg-zinc-900 rounded-2xl shadow-lg p-6 max-w-md w-full space-y-4">
+          <p className="text-xl font-medium">⏳ Загружаем Telegram ID...</p>
+          <p className="text-sm text-gray-400">Если не загружается — перезапусти WebApp</p>
+          <button
+            onClick={() => setStage("intro")}
+            className="mt-2 w-full py-2 bg-zinc-800 hover:bg-zinc-700 text-white font-semibold rounded-xl border border-zinc-600 transition"
+          >
+            ← Назад
+          </button>
+        </div>
       </motion.div>
     );
   }

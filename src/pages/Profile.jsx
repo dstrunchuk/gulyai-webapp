@@ -116,7 +116,7 @@ const Profile = () => {
         />
       )}
   
-      <div className="w-full max-w-md bg-gradient-to-br from-[#2c2c2e] to-[#1f1f20] p-6 rounded-2xl shadow-2xl space-y-5">
+      <div className="w-full max-w-md bg-gradient-to-br from-[#2c2c2e] to-[#1f1f20] p-6 rounded-2xl shadow-2xl space-y-2">
         <p><span className="text-zinc-400">Имя:</span> {user.name}</p>
   
         <div className="flex items-start justify-between gap-2">

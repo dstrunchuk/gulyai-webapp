@@ -27,44 +27,44 @@ const Form = () => {
     const tg = window.Telegram?.WebApp;
     tg?.ready();
   
-    const id = tg?.initDataUnsafe?.user?.id;
-    console.log("Получен Telegram ID:", id);
+    const checkId = () => {
+      const id = tg?.initDataUnsafe?.user?.id;
+      console.log("Пробуем получить Telegram ID:", id);
   
-    if (!id) {
-      console.warn("Telegram ID не найден, ждем 5 сек...");
-      const timeout = setTimeout(() => {
-        console.warn("ID всё ещё не получен. Переход в failed.");
-        setStage("failed");
-      }, 5000);
-      return () => clearTimeout(timeout);
-    }
+      if (id) {
+        setChatId(id);
   
-    setChatId(id);
+        const params = new URLSearchParams(window.location.search);
+        const isReset = params.get("reset") === "true";
   
-    const params = new URLSearchParams(window.location.search);
-    const isReset = params.get("reset") === "true";
+        if (isReset) {
+          console.log("Режим reset — показываем форму.");
+          setStage("form");
+          setCheckingStorage(false);
+          return;
+        }
   
-    if (isReset) {
-      console.log("Режим reset — показываем форму.");
-      setStage("form");
-      setCheckingStorage(false);
-      return;
-    }
+        fetch(`https://gulyai-backend-production.up.railway.app/api/profile/${id}`)
+          .then((res) => {
+            if (!res.ok) throw new Error("Анкета не найдена");
+            return res.json();
+          })
+          .then((profile) => {
+            localStorage.setItem("user", JSON.stringify(profile));
+            window.location.href = "/profile";
+          })
+          .catch((err) => {
+            console.warn("Анкета не найдена:", err.message);
+            setStage("form");
+            setCheckingStorage(false);
+          });
+      } else {
+        console.warn("Telegram ID не получен. Пробуем ещё раз через 500ms...");
+        setTimeout(checkId, 500);
+      }
+    };
   
-    fetch(`https://gulyai-backend-production.up.railway.app/api/profile/${id}`)
-      .then((res) => {
-        if (!res.ok) throw new Error("Анкета не найдена");
-        return res.json();
-      })
-      .then((profile) => {
-        localStorage.setItem("user", JSON.stringify(profile));
-        window.location.href = "/profile";
-      })
-      .catch((err) => {
-        console.warn("Анкета не найдена:", err.message);
-        setStage("form");
-        setCheckingStorage(false);
-      });
+    checkId();
   }, [stage]);
 
   const convertToJpeg = async (file) => {

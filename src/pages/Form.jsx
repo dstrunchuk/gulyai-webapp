@@ -62,8 +62,9 @@ const Form = () => {
               `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`
             );
             const data = await res.json();
-            const { city, town, village, road, state } = data.address;
-            const fullAddress = `${city || town || village || ""}, ${road || ""}, ${state || ""}`;
+            const { city, town, village, road, state, suburb, city_district } = data.address;
+            const area = suburb || city_district || "";
+            const fullAddress = `${city || town || village || ""}, ${area}, ${road || ""}, ${state || ""}`;
             setAddress(fullAddress);
           } catch (err) {
             console.warn("Не удалось получить адрес:", err);

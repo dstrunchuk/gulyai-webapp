@@ -21,6 +21,12 @@ const Form = () => {
   console.log("Текущий stage:", stage);
   console.log("checkingStorage:", checkingStorage);
   
+  useEffect(() => {
+    if (stage === "intro" && checkingStorage) {
+      console.log("На экране intro слишком долго — сбрасываем checkingStorage");
+      setCheckingStorage(false);
+    }
+  }, [stage, checkingStorage]);
 
   // Получаем геолокацию
   useEffect(() => {

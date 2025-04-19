@@ -22,17 +22,37 @@ const Form = () => {
   useEffect(() => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
-        (pos) => {
-          setLatitude(pos.coords.latitude);
-          setLongitude(pos.coords.longitude);
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          setLatitude(latitude);
+          setLongitude(longitude);
         },
-        (err) => {
-          console.warn("Геолокация не получена:", err.message);
+        (error) => {
+          console.error("Ошибка при получении геолокации:", error);
         }
       );
+    } else {
+      console.error("Геолокация не поддерживается этим браузером.");
     }
   }, []);
 
+  useEffect(() => {
+    if (latitude && longitude) {
+      fetch(
+        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&addressdetails=1`
+      )
+        .then((response) => response.json())
+        .then((data) => {
+          if (data && data.display_name) {
+            setAddress(data.display_name);
+          }
+        })
+        .catch((error) => {
+          console.error("Ошибка при обратном геокодировании:", error);
+        });
+    }
+  }, [latitude, longitude]);
+  
   // Проверка Telegram ID + проверка/редирект анкеты
   useEffect(() => {
     const tg = window.Telegram?.WebApp;

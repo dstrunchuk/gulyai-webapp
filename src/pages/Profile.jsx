@@ -103,77 +103,81 @@ const Profile = () => {
   }
 
   return (
-    <div className="min-h-screen max-h-screen overflow-y-auto bg-[#1c1c1e] text-white px-4 py-6 flex flex-col items-center">
-    <h1 className="text-3xl font-bold mb-6 text-center">Твоя анкета</h1>
+    <div className="min-h-screen max-h-screen overflow-y-auto bg-[#1c1c1e] text-white px-4 py-8 flex flex-col items-center">
+      <h1 className="text-4xl font-extrabold mb-6 text-center tracking-tight">
+        Твоя анкета
+      </h1>
   
-    {user.photo_url && (
-      <img
-        src={user.photo_url}
-        alt="Фото профиля"
-        className="mb-6 w-32 h-32 object-cover rounded-full border border-gray-700"
-      />
-    )}
+      {user.photo_url && (
+        <img
+          src={user.photo_url}
+          alt="Фото профиля"
+          className="mb-6 w-36 h-36 object-cover rounded-full border-4 border-[#2c2c2e] shadow-lg"
+        />
+      )}
   
-      <div className="w-full max-w-md bg-zinc-900 p-6 rounded-2xl shadow-lg space-y-4">
+      <div className="w-full max-w-md bg-gradient-to-br from-[#2c2c2e] to-[#1f1f20] p-6 rounded-2xl shadow-2xl space-y-5">
         <p><span className="text-zinc-400">Имя:</span> {user.name}</p>
   
         <div className="flex items-start justify-between gap-2">
-          <p><span className="text-zinc-400">Адрес:</span> {user.address}</p>
+          <p className="flex-1 break-words"><span className="text-zinc-400">Адрес:</span> {user.address}</p>
           <button
             onClick={handleUpdateAddress}
-            className="ml-3 px-4 py-1 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-xl text-sm shadow-md hover:opacity-90 transition-all duration-200">
+            className="ml-3 px-4 py-1 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl text-sm font-medium shadow-md hover:opacity-90 transition"
+          >
             Обновить
           </button>
         </div>
   
         <p><span className="text-zinc-400">Возраст:</span> {user.age}</p>
         <p><span className="text-zinc-400">Интересы:</span> {user.interests}</p>
+  
         <div>
           <label className="text-zinc-400">Цель встречи:</label>
           <select
             value={user.activity}
             onChange={(e) => updateUser({ activity: e.target.value })}
-            className="w-full mt-1 p-2 rounded bg-zinc-800 border border-zinc-700"
+            className="w-full mt-2 p-3 rounded-xl bg-zinc-800 border border-zinc-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
           >
             <option value="Кофе">Кофе</option>
             <option value="Прогулка">Прогулка</option>
             <option value="Покурить">Покурить</option>
           </select>
         </div>
-
+  
         <div>
           <label className="text-zinc-400">Микро-настроение:</label>
           <select
             value={user.vibe}
             onChange={(e) => updateUser({ vibe: e.target.value })}
-            className="w-full mt-1 p-2 rounded bg-zinc-800 border border-zinc-700"
+            className="w-full mt-2 p-3 rounded-xl bg-zinc-800 border border-zinc-700 focus:outline-none focus:ring-2 focus:ring-purple-500 transition"
           >
             <option value="Просто пройтись">Просто пройтись</option>
             <option value="Поговорить">Поговорить</option>
             <option value="Хочу активности">Хочу активности</option>
           </select>
         </div>
-
+  
         <div>
           <label className="text-zinc-400">Статус:</label>
           <select
             value={user.status || ""}
             onChange={(e) => updateUser({ status: e.target.value })}
-            className="w-full mt-1 p-2 rounded bg-zinc-800 border border-zinc-700"
+            className="w-full mt-2 p-3 rounded-xl bg-zinc-800 border border-zinc-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition"
           >
             <option value="">—</option>
             <option value="online">Иду гулять</option>
             <option value="offline">Гуляю один(-а)</option>
           </select>
         </div>
-
+  
         {user.status === "online" && (
           <div>
             <label className="text-zinc-400">На сколько времени:</label>
             <select
               value={statusDuration}
               onChange={(e) => setStatusDuration(Number(e.target.value))}
-              className="w-full mt-1 p-2 rounded bg-zinc-800 border border-zinc-700"
+              className="w-full mt-2 p-3 rounded-xl bg-zinc-800 border border-zinc-700"
             >
               <option value={1}>1 час</option>
               <option value={2}>2 часа</option>
@@ -182,20 +186,17 @@ const Profile = () => {
             <button
               onClick={() => {
                 const until = Date.now() + statusDuration * 60 * 60 * 1000;
-                updateUser({
-                  online_until: until,
-                  status_duration: statusDuration
-                });
-
+                updateUser({ online_until: until, status_duration: statusDuration });
+  
                 const label = `${statusDuration} ${statusDuration === 1 ? "час" : "часа"}`;
                 setStatusMessage(`Статус подтверждён на ${label}`);
                 setTimeout(() => setStatusMessage(""), 4000);
               }}
-              className="mt-2 w-full bg-green-600 hover:bg-green-700 py-2 rounded-xl font-bold transition"
+              className="mt-3 w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:opacity-90 py-3 rounded-xl font-bold transition"
             >
               Подтвердить статус
             </button>
-
+  
             {statusMessage && (
               <p className="mt-2 text-green-400 text-sm text-center animate-pulse">
                 {statusMessage}
@@ -204,18 +205,18 @@ const Profile = () => {
           </div>
         )}
       </div>
-
-      <div className="mt-8 flex flex-col gap-4 w-full max-w-md">
+  
+      <div className="mt-10 flex flex-col gap-4 w-full max-w-md">
         <button
           onClick={() => navigate("/people")}
-          className="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-xl font-bold transition"
+          className="w-full bg-gradient-to-r from-pink-500 to-red-500 hover:opacity-90 text-white py-3 rounded-xl font-bold transition"
         >
-          Гулять
+          🚀 Гулять
         </button>
-
+  
         <button
           onClick={resetProfile}
-          className="w-full bg-zinc-900 hover:bg-zinc-800 text-white py-3 rounded-xl font-semibold border border-zinc-700 transition"
+          className="w-full bg-[#2c2c2e] hover:bg-[#3c3c3e] text-white py-3 rounded-xl font-semibold border border-zinc-700 transition"
         >
           📝 Заполнить заново
         </button>

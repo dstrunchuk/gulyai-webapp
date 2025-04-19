@@ -103,7 +103,7 @@ const Profile = () => {
   }
 
   return (
-    <div className="min-h-screen bg-black text-white p-6 flex flex-col items-center">
+    <div className="min-h-screen bg-black text-white px-4 py-6 flex flex-col items-center">
       <h1 className="text-3xl font-bold mb-6">Твоя анкета</h1>
   
       {user.photo_url && (

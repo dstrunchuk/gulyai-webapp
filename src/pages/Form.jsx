@@ -25,13 +25,7 @@ const Form = () => {
     const tg = window.Telegram?.WebApp;
     tg?.ready();
   
-    const id = tg?.initDataUnsafe?.user?.id;
-    if (!id) {
-      console.warn("Telegram ID не получен");
-      setStage("intro");
-      setCheckingStorage(false);
-      return;
-    }
+    
   
     console.log("Получен Telegram ID:", id);
     setChatId(id);

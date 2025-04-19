@@ -22,14 +22,21 @@ const Form = () => {
 
   // Получаем геолокацию
   useEffect(() => {
+    if (stage !== "loading") return;
+  
     const tg = window.Telegram?.WebApp;
     tg?.ready();
   
     const id = tg?.initDataUnsafe?.user?.id;
+    console.log("Получен Telegram ID:", id);
+  
     if (!id) {
-      console.warn("Telegram ID не получен");
-      setStage("failed");
-      return;
+      console.warn("Telegram ID не найден, ждем 5 сек...");
+      const timeout = setTimeout(() => {
+        console.warn("ID всё ещё не получен. Переход в failed.");
+        setStage("failed");
+      }, 5000);
+      return () => clearTimeout(timeout);
     }
   
     setChatId(id);
@@ -38,30 +45,27 @@ const Form = () => {
     const isReset = params.get("reset") === "true";
   
     if (isReset) {
-      console.log("RESET MODE — пропускаем проверку анкеты");
-      setTimeout(() => {
+      console.log("Режим reset — показываем форму.");
+      setStage("form");
+      setCheckingStorage(false);
+      return;
+    }
+  
+    fetch(`https://gulyai-backend-production.up.railway.app/api/profile/${id}`)
+      .then((res) => {
+        if (!res.ok) throw new Error("Анкета не найдена");
+        return res.json();
+      })
+      .then((profile) => {
+        localStorage.setItem("user", JSON.stringify(profile));
+        window.location.href = "/profile";
+      })
+      .catch((err) => {
+        console.warn("Анкета не найдена:", err.message);
         setStage("form");
         setCheckingStorage(false);
-      }, 100); // чуть отложим, чтобы точно применилось
-    } else {
-      fetch(`https://gulyai-backend-production.up.railway.app/api/profile/${id}`)
-        .then((res) => {
-          if (!res.ok) throw new Error("Анкета не найдена");
-          return res.json();
-        })
-        .then((profile) => {
-          localStorage.setItem("user", JSON.stringify(profile));
-          window.location.href = "/profile";
-        })
-        .catch((err) => {
-          console.warn("Анкета не найдена:", err.message);
-          setTimeout(() => {
-            setStage("form");
-            setCheckingStorage(false);
-          }, 100); // чуть отложим, чтобы stage точно применился
-        });
-    }
-  }, []);
+      });
+  }, [stage]);
 
   const convertToJpeg = async (file) => {
     if (file.type === "image/heic" || file.name.toLowerCase().endsWith(".heic")) {
@@ -197,6 +201,7 @@ const Form = () => {
       </div>
     );
   }
+  
   if (stage === "form") {
     return (
       <motion.div
@@ -284,10 +289,8 @@ const Form = () => {
   
         <div className="mt-6 flex justify-center">
           <button
-            onClick={() => {
-              window.location.href = "/?reset=true";
-            }}
-            className="mt-2 bg-white text-black font-semibold py-2 px-6 rounded-xl hover:bg-gray-200 transition"
+            onClick={() => setStage("intro")}
+            className="bg-gray-700 text-white py-2 px-6 rounded-xl hover:bg-gray-600"
           >
             ← Назад
           </button>

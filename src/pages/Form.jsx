@@ -238,100 +238,92 @@ const Form = () => {
         className="max-w-xl mx-auto p-4 bg-[#1c1c1e] text-white min-h-screen"
       >
         <h1 className="text-2xl font-bold mb-4">Заполни анкету</h1>
-        {/* форма анкеты со всеми полями */}
+  
+        <input
+          type="text"
+          placeholder="Имя"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          className="w-full mb-3 p-3 rounded-xl border border-gray-600 bg-[#2c2c2e]"
+        />
+        <input
+          type="text"
+          placeholder="Адрес (город, район, улица)"
+          value={address}
+          onChange={(e) => setAddress(e.target.value)}
+          className="w-full mb-3 p-3 rounded-xl border border-gray-600 bg-[#2c2c2e]"
+        />
+        <input
+          type="number"
+          placeholder="Возраст"
+          value={age}
+          onChange={(e) => setAge(e.target.value)}
+          className="w-full mb-3 p-3 rounded-xl border border-gray-600 bg-[#2c2c2e]"
+        />
+        <textarea
+          placeholder="Интересы"
+          value={interests}
+          onChange={(e) => setInterests(e.target.value)}
+          className="w-full mb-3 p-3 rounded-xl border border-gray-600 bg-[#2c2c2e]"
+        />
+        <label className="block text-sm mb-1">Цель встречи</label>
+        <select
+          value={activity}
+          onChange={(e) => setActivity(e.target.value)}
+          className="w-full mb-3 p-3 rounded-xl border border-gray-600 bg-[#2c2c2e]"
+        >
+          <option value="">Выбери цель</option>
+          <option value="Кофе">Кофе</option>
+          <option value="Прогулка">Прогулка</option>
+          <option value="Покурить">Покурить</option>
+        </select>
+        <label className="block text-sm mb-1">Микро-настроение</label>
+        <select
+          value={vibe}
+          onChange={(e) => setVibe(e.target.value)}
+          className="w-full mb-3 p-3 rounded-xl border border-gray-600 bg-[#2c2c2e]"
+        >
+          <option value="">Выбери настроение</option>
+          <option value="Просто пройтись">Просто пройтись</option>
+          <option value="Поговорить">Поговорить</option>
+          <option value="Хочу активности">Хочу активности</option>
+        </select>
+  
+        <label className="block text-sm mb-1">Фото профиля</label>
+        <input
+          type="file"
+          accept="image/*,.heic"
+          onChange={handlePhotoChange}
+          className="mb-4 w-full text-white file:bg-gray-700 file:text-white file:rounded-xl file:px-4 file:py-2 border border-gray-600 bg-[#2c2c2e]"
+        />
+        {photo && (
+          <img
+            src={URL.createObjectURL(photo)}
+            alt="Фото"
+            className="mb-4 w-32 h-32 object-cover rounded-xl border border-gray-700"
+          />
+        )}
+  
+        <button
+          onClick={handleSubmit}
+          disabled={submitting}
+          className={`w-full py-3 rounded-xl font-bold transition ${
+            submitting ? "bg-gray-500 text-white" : "bg-white text-black hover:bg-gray-300"
+          }`}
+        >
+          {submitting ? "⏳ Загрузка..." : "🚀 ГУЛЯТЬ"}
+        </button>
+  
+        <div className="mt-6 flex justify-center">
+          <button
+            onClick={() => setStage("intro")}
+            className="bg-gray-700 text-white py-2 px-6 rounded-xl hover:bg-gray-600"
+          >
+            ← Назад
+          </button>
+        </div>
       </motion.div>
     );
   }
-
-  return (
-    <div className="max-w-xl mx-auto p-4 bg-[#1c1c1e] text-white min-h-screen">
-      <h1 className="text-2xl font-bold mb-4">Заполни анкету</h1>
-
-      <input
-        type="text"
-        placeholder="Имя"
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-        className="w-full mb-3 p-3 rounded-xl border border-gray-600 bg-[#2c2c2e]"
-      />
-      <input
-        type="text"
-        placeholder="Адрес (город, район, улица)"
-        value={address}
-        onChange={(e) => setAddress(e.target.value)}
-        className="w-full mb-3 p-3 rounded-xl border border-gray-600 bg-[#2c2c2e]"
-      />
-      <input
-        type="number"
-        placeholder="Возраст"
-        value={age}
-        onChange={(e) => setAge(e.target.value)}
-        className="w-full mb-3 p-3 rounded-xl border border-gray-600 bg-[#2c2c2e]"
-      />
-      <textarea
-        placeholder="Интересы"
-        value={interests}
-        onChange={(e) => setInterests(e.target.value)}
-        className="w-full mb-3 p-3 rounded-xl border border-gray-600 bg-[#2c2c2e]"
-      />
-      <label className="block text-sm mb-1">Цель встречи</label>
-      <select
-        value={activity}
-        onChange={(e) => setActivity(e.target.value)}
-        className="w-full mb-3 p-3 rounded-xl border border-gray-600 bg-[#2c2c2e]"
-      >
-        <option value="">Выбери цель</option>
-        <option value="Кофе">Кофе</option>
-        <option value="Прогулка">Прогулка</option>
-        <option value="Покурить">Покурить</option>
-      </select>
-      <label className="block text-sm mb-1">Микро-настроение</label>
-      <select
-        value={vibe}
-        onChange={(e) => setVibe(e.target.value)}
-        className="w-full mb-3 p-3 rounded-xl border border-gray-600 bg-[#2c2c2e]"
-      >
-        <option value="">Выбери настроение</option>
-        <option value="Просто пройтись">Просто пройтись</option>
-        <option value="Поговорить">Поговорить</option>
-        <option value="Хочу активности">Хочу активности</option>
-      </select>
-
-      <label className="block text-sm mb-1">Фото профиля</label>
-      <input
-        type="file"
-        accept="image/*,.heic"
-        onChange={handlePhotoChange}
-        className="mb-4 w-full text-white file:bg-gray-700 file:text-white file:rounded-xl file:px-4 file:py-2 border border-gray-600 bg-[#2c2c2e]"
-      />
-      {photo && (
-        <img
-          src={URL.createObjectURL(photo)}
-          alt="Фото"
-          className="mb-4 w-32 h-32 object-cover rounded-xl border border-gray-700"
-        />
-      )}
-
-      <button
-        onClick={handleSubmit}
-        disabled={submitting}
-        className={`w-full py-3 rounded-xl font-bold transition ${
-          submitting ? "bg-gray-500 text-white" : "bg-white text-black hover:bg-gray-300"
-        }`}
-      >
-        {submitting ? "⏳ Загрузка..." : "🚀 ГУЛЯТЬ"}
-      </button>
-
-      <div className="mt-6 flex justify-center">
-        <button
-          onClick={() => setStage("intro")}
-          className="bg-gray-700 text-white py-2 px-6 rounded-xl hover:bg-gray-600"
-        >
-          ← Назад
-        </button>
-      </div>
-    </div>
-  );
-};
-
+}
 export default Form;

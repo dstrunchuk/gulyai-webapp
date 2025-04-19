@@ -179,7 +179,7 @@ const Form = () => {
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
-        className="min-h-screen flex flex-col justify-center items-center px-6 pb-0 bg-[#1c1c1e] text-white text-center overflow-hidden"
+        className="h-screen flex flex-col justify-center items-center px-6 pb-0 bg-[#1c1c1e] text-white text-center overflow-hidden"
       >
         <h1 className="text-3xl font-bold mb-6">Прежде чем начать</h1>
         <ul className="text-lg space-y-3 mb-8">
@@ -208,7 +208,7 @@ const Form = () => {
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="min-h-screen flex flex-col justify-center items-center px-6 bg-black text-white text-center"
+        className="h-screen flex flex-col justify-center items-center px-6 pb-0 bg-[#1c1c1e] text-white text-center overflow-hidden"
       >
         <p className="text-xl mb-3">⏳ Загружаем Telegram ID...</p>
         <p className="text-sm text-gray-400 mb-6">Если не загружается — перезапусти WebApp</p>

@@ -17,10 +17,15 @@ body {
 #root {
   @apply min-h-screen bg-[#1c1c1e];
 }
-html, body, #root {
+html, body {
+  height: 100%;
+  overflow: hidden;
   margin: 0;
   padding: 0;
-  height: 100%;
-  overflow-x: hidden;
   background-color: #1c1c1e;
+}
+
+#root {
+  height: 100%;
+  overflow: hidden;
 }

@@ -1,3 +1,5 @@
+console.log("Текущий stage:", stage);
+console.log("checkingStorage:", checkingStorage);
 import { useState, useEffect } from "react";
 import heic2any from "heic2any";
 import { motion } from "framer-motion";
@@ -324,7 +326,11 @@ const Form = () => {
       </motion.div>
     );
   }
-  return null;
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-black text-white">
+      <p>Ничего не найдено для stage: {stage}</p>
+    </div>
+  );
 }
 
 export default Form;

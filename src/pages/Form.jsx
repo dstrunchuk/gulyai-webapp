@@ -15,12 +15,29 @@ const Form = () => {
   const [activity, setActivity] = useState("");
   const [vibe, setVibe] = useState("");
   const [photo, setPhoto] = useState(null);
+  const [latitude, setLatitude] = useState(null);
+  const [longitude, setLongitude] = useState(null);
 
-  // Проверка localStorage + reset
+  // Получаем геолокацию
+  useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          setLatitude(pos.coords.latitude);
+          setLongitude(pos.coords.longitude);
+        },
+        (err) => {
+          console.warn("Геолокация не получена:", err.message);
+        }
+      );
+    }
+  }, []);
+
+  // Проверка Telegram ID + проверка/редирект анкеты
   useEffect(() => {
     const tg = window.Telegram?.WebApp;
     tg?.ready();
-  
+
     const id = tg?.initDataUnsafe?.user?.id;
     if (!id) {
       console.warn("Telegram ID не получен");
@@ -28,19 +45,16 @@ const Form = () => {
       setCheckingStorage(false);
       return;
     }
-  
-    console.log("chat_id:", id);
+
     setChatId(id);
-  
+
     const params = new URLSearchParams(window.location.search);
     const isReset = params.get("reset") === "true";
-  
+
     if (isReset) {
-      // При reset — открываем форму без проверки анкеты
       setStage("form");
       setCheckingStorage(false);
     } else {
-      // Иначе — проверка, есть ли анкета
       fetch(`https://gulyai-backend-production.up.railway.app/api/profile/${id}`)
         .then((res) => {
           if (!res.ok) throw new Error("Анкета не найдена");
@@ -50,12 +64,12 @@ const Form = () => {
           localStorage.setItem("user", JSON.stringify(profile));
           window.location.href = "/profile";
         })
-        .catch((err) => {
-          console.warn("Анкета не найдена:", err.message);
+        .catch(() => {
           setCheckingStorage(false);
         });
     }
   }, []);
+
   const convertToJpeg = async (file) => {
     if (file.type === "image/heic" || file.name.toLowerCase().endsWith(".heic")) {
       const blob = await heic2any({ blob: file, toType: "image/jpeg", quality: 0.8 });
@@ -85,6 +99,10 @@ const Form = () => {
     formData.append("activity", activity);
     formData.append("vibe", vibe);
     formData.append("chat_id", chatId);
+    if (latitude && longitude) {
+      formData.append("latitude", latitude);
+      formData.append("longitude", longitude);
+    }
     if (photo) formData.append("photo", photo);
 
     try {
@@ -94,7 +112,6 @@ const Form = () => {
       });
 
       const result = await res.json();
-
       if (!result.ok) throw new Error("Ошибка с сервера");
 
       const profileData = {
@@ -106,6 +123,8 @@ const Form = () => {
         vibe,
         chat_id: chatId,
         photo_url: result.photo_url,
+        latitude,
+        longitude,
         created_at: new Date().toISOString(),
       };
 

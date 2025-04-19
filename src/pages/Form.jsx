@@ -5,6 +5,8 @@ import { motion } from "framer-motion";
 const Form = () => {
   const [stage, setStage] = useState("intro");
   const [chatId, setChatId] = useState(null);
+  const [lat, setLat] = useState(null);
+  const [lon, setLon] = useState(null);
   const [submitting, setSubmitting] = useState(false);
   const [checkingStorage, setCheckingStorage] = useState(true);
 

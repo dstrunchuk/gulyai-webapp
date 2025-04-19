@@ -20,15 +20,10 @@ const Form = () => {
 
   // Получаем геолокацию
   useEffect(() => {
-    console.log(">> useEffect стартовал");
-  
     const tg = window.Telegram?.WebApp;
     tg?.ready();
-    console.log(">> Telegram WebApp готов");
   
     const id = tg?.initDataUnsafe?.user?.id;
-    console.log(">> Получен Telegram ID:", id);
-  
     if (!id) {
       console.warn("Telegram ID не получен");
       setStage("intro");
@@ -36,73 +31,39 @@ const Form = () => {
       return;
     }
   
+    console.log("Получен Telegram ID:", id);
     setChatId(id);
   
     const params = new URLSearchParams(window.location.search);
     const isReset = params.get("reset") === "true";
-    console.log(">> Режим reset:", isReset);
-  
-    const loadAddressFromCoords = async (lat, lon) => {
-      try {
-        console.log(">> Пытаемся получить адрес по координатам:", lat, lon);
-        const res = await fetch(
-          `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`
-        );
-        const data = await res.json();
-        const { city, town, village, road, state } = data.address;
-        const addressText = `${city || town || village || ""}, ${road || ""}, ${state || ""}`;
-        setAddress(addressText);
-        setLatitude(lat);
-        setLongitude(lon);
-        console.log(">> Адрес установлен:", addressText);
-      } catch (err) {
-        console.warn("Ошибка геокодинга:", err);
-      }
-    };
-  
-    const onLocationReady = (lat, lon) => {
-      console.log(">> Геолокация получена:", lat, lon);
-  
-      if (isReset) {
-        console.log(">> Режим reset — сразу открываем форму");
-        setStage("form");
-        setCheckingStorage(false);
-        loadAddressFromCoords(lat, lon);
-      } else {
-        console.log(">> Проверяем наличие анкеты по chat_id...");
-        fetch(`https://gulyai-backend-production.up.railway.app/api/profile/${id}`)
-          .then((res) => {
-            console.log(">> Ответ на запрос анкеты:", res.status);
-            if (!res.ok) throw new Error("Анкета не найдена");
-            return res.json();
-          })
-          .then((profile) => {
-            console.log(">> Анкета найдена. Переход на /profile");
-            localStorage.setItem("user", JSON.stringify(profile));
-            window.location.href = "/profile";
-          })
-          .catch((err) => {
-            console.warn(">> Анкета не найдена. Переходим к форме", err.message);
-            setStage("form");
-            setCheckingStorage(false);
-            loadAddressFromCoords(lat, lon);
-          });
-      }
-    };
   
     if (navigator.geolocation) {
-      console.log(">> Геолокация доступна. Получаем координаты...");
       navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const { latitude, longitude } = position.coords;
-          onLocationReady(latitude, longitude);
-        },
-        (err) => {
-          console.error(">> Ошибка геолокации:", err);
+        async (position) => {
+          const lat = position.coords.latitude;
+          const lon = position.coords.longitude;
+          setLat(lat);
+          setLon(lon);
+  
+          try {
+            const res = await fetch(
+              `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&addressdetails=1`
+            );
+            const data = await res.json();
+            const { city, town, village, road, state } = data.address;
+            const addressText = `${city || town || village || "Город"}, ${road || "улица"}, ${state || ""}`;
+            setAddress(addressText);
+          } catch (err) {
+            console.warn("Ошибка при получении адреса:", err);
+          }
+  
+          // Переход к форме после геолокации
           if (isReset) {
+            console.log("Режим reset: true — открываем форму");
             setStage("form");
             setCheckingStorage(false);
           } else {
+            // Проверка анкеты
             fetch(`https://gulyai-backend-production.up.railway.app/api/profile/${id}`)
               .then((res) => {
                 if (!res.ok) throw new Error("Анкета не найдена");
@@ -113,14 +74,20 @@ const Form = () => {
                 window.location.href = "/profile";
               })
               .catch(() => {
+                console.warn("Анкета не найдена — открываем форму");
                 setStage("form");
                 setCheckingStorage(false);
               });
           }
+        },
+        (error) => {
+          console.error("Ошибка геолокации:", error);
+          setStage("form");
+          setCheckingStorage(false);
         }
       );
     } else {
-      console.warn(">> Геолокация не поддерживается");
+      console.warn("Геолокация не поддерживается");
       setStage("form");
       setCheckingStorage(false);
     }

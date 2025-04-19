@@ -63,13 +63,25 @@ const Profile = () => {
         const { city, town, village, road, state } = data.address;
         const newAddress = `${city || town || village || ""}, ${road || ""}, ${state || ""}`;
   
-        await updateUser({
-          address: newAddress,
-          latitude: lat,
-          longitude: lon
+        const chat_id = user?.chat_id || JSON.parse(localStorage.getItem("user"))?.chat_id;
+        if (!chat_id) {
+          alert("❌ Не найден chat_id");
+          return;
+        }
+  
+        await fetch("https://gulyai-backend-production.up.railway.app/api/update-profile", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            chat_id,
+            address: newAddress,
+            latitude: lat,
+            longitude: lon,
+          }),
         });
   
         alert("✅ Адрес обновлён!");
+        window.location.reload(); // Обновим страницу, чтобы отобразить обновлённый адрес
       } catch (err) {
         alert("❌ Не удалось обновить адрес");
         console.error(err);

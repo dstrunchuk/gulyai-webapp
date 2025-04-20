@@ -25,7 +25,7 @@ const Profile = () => {
       }
     };
     fetchOtherUser();
-  }, [chatIdParam, isViewingAnotherUser]);
+  }, [chatIdParam, isViewingAnotherProfile]);
 
   useEffect(() => {
     const stored = localStorage.getItem("user");

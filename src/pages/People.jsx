@@ -9,6 +9,8 @@ const People = () => {
   const [coords, setCoords] = useState(null);
   const [selectedPhoto, setSelectedPhoto] = useState(null);
   const navigate = useNavigate();
+  const storedUser = localStorage.getItem("user");
+  const user = storedUser ? JSON.parse(storedUser) : null;
 
   useEffect(() => {
     const stored = localStorage.getItem("user");

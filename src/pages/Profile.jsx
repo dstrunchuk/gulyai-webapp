@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-
+const BACKEND_URL = "https://gulyai-backend-production.up.railway.app";
 
 const Profile = () => {
   const [user, setUser] = useState(null);
@@ -15,6 +15,7 @@ const Profile = () => {
   const isViewingAnotherProfile = !!externalChatId && (!user || user.chat_id !== externalChatId);
   const [otherUser, setOtherUser] = useState(null);
   const viewedUser = isViewingAnotherProfile ? otherUser : user;
+  
 
   useEffect(() => {
     const fetchOtherUser = async () => {

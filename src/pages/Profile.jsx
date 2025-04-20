@@ -170,24 +170,26 @@ const Profile = () => {
   
       <div className="w-full max-w-md bg-gradient-to-br from-[#2c2c2e] to-[#1f1f20] p-6 rounded-2xl shadow-2xl space-y-2">
         <p><span className="text-zinc-400">Имя:</span> {viewedUser.name}</p>
-        <p><span className="text-zinc-400">Адрес:</span> {viewedUser.address}</p>
+  
+        {!isViewingAnotherProfile ? (
+          <div className="flex items-start justify-between gap-2">
+            <p className="flex-1 break-words"><span className="text-zinc-400">Адрес:</span> {user.address}</p>
+            <button
+              onClick={handleUpdateAddress}
+              className="ml-3 px-4 py-1 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl text-sm font-medium shadow-md hover:opacity-90 transition"
+            >
+              Обновить
+            </button>
+          </div>
+        ) : (
+          <p><span className="text-zinc-400">Адрес:</span> {viewedUser.address}</p>
+        )}
+  
         <p><span className="text-zinc-400">Возраст:</span> {viewedUser.age}</p>
         <p><span className="text-zinc-400">Интересы:</span> {viewedUser.interests}</p>
   
         {!isViewingAnotherProfile ? (
           <>
-            {/* Обновляемый адрес */}
-            <div className="flex items-start justify-between gap-2">
-              <p className="flex-1 break-words"><span className="text-zinc-400">Адрес:</span> {viewedUser.address}</p>
-              <button
-                onClick={handleUpdateAddress}
-                className="ml-3 px-4 py-1 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl text-sm font-medium shadow-md hover:opacity-90 transition"
-              >
-                Обновить
-              </button>
-            </div>
-  
-            {/* Цель встречи */}
             <div>
               <label className="text-zinc-400">Цель встречи:</label>
               <select
@@ -201,7 +203,6 @@ const Profile = () => {
               </select>
             </div>
   
-            {/* Настроение */}
             <div>
               <label className="text-zinc-400">Микро-настроение:</label>
               <select
@@ -215,7 +216,6 @@ const Profile = () => {
               </select>
             </div>
   
-            {/* Статус */}
             <div id="status-block">
               <label className="text-zinc-400">Статус:</label>
               <select
@@ -240,7 +240,6 @@ const Profile = () => {
               </select>
             </div>
   
-            {/* Подтверждение статуса */}
             {user.status === "online" && (
               <div className="mt-4">
                 <label className="text-zinc-400">На сколько времени:</label>
@@ -288,7 +287,6 @@ const Profile = () => {
         )}
       </div>
   
-      {/* Кнопки снизу — только для своего профиля */}
       {!isViewingAnotherProfile && (
         <div className="mt-10 flex flex-col gap-4 w-full max-w-md">
           {user.status === "online" ? (

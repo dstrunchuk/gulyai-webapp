@@ -14,11 +14,11 @@ const Profile = () => {
   const chatIdParam = params.get("chat_id");
   const isViewingAnotherProfile = !!externalChatId && (!user || user.chat_id !== externalChatId);
   const [otherUser, setOtherUser] = useState(null);
-  const viewedUser = isViewingAnotherUser ? otherUser : user;
+  const viewedUser = isViewingAnotherProfile ? otherUser : user;
 
   useEffect(() => {
     const fetchOtherUser = async () => {
-      if (isViewingAnotherUser) {
+      if (isViewingAnotherProfile) {
         const res = await fetch(`${BACKEND_URL}/api/profile/${chatIdParam}`);
         const data = await res.json();
         setOtherUser(data);

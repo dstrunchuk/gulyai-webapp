@@ -1,37 +1,12 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-const [isPhotoOpen, setIsPhotoOpen] = useState(false);
 
 const BACKEND_URL = "https://gulyai-backend-production.up.railway.app";
 
 const ViewProfile = () => {
   const { chat_id } = useParams();
   const [user, setUser] = useState(null);
-
-  {viewedUser.photo_url && (
-    <img
-      src={viewedUser.photo_url}
-      alt="Фото профиля"
-      className="mb-6 w-36 h-36 object-cover rounded-full border-4 border-[#2c2c2e] shadow-lg cursor-pointer"
-      onClick={() => setIsPhotoOpen(true)}
-    />
-  )}
-
-  {isPhotoOpen && (
-    <div className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50">
-      <img
-        src={viewedUser.photo_url}
-        alt="Фото профиля"
-        className="max-w-full max-h-full object-contain rounded-xl"
-      />
-      <button
-        className="absolute top-5 right-5 text-white text-3xl font-bold"
-        onClick={() => setIsPhotoOpen(false)}
-      >
-        &times;
-      </button>
-    </div>
-  )}
+  const [isPhotoOpen, setIsPhotoOpen] = useState(false);
 
   useEffect(() => {
     document.documentElement.classList.add("dark");
@@ -57,14 +32,34 @@ const ViewProfile = () => {
 
   return (
     <div className="min-h-screen max-h-screen overflow-y-auto bg-[#1c1c1e] text-white px-4 py-8 flex flex-col items-center">
+      {/* Фото и клик для открытия */}
       {user.photo_url && (
         <img
           src={user.photo_url}
           alt="Фото профиля"
-          className="mb-6 w-36 h-36 object-cover rounded-full border-4 border-[#2c2c2e] shadow-lg"
+          className="mb-6 w-36 h-36 object-cover rounded-full border-4 border-[#2c2c2e] shadow-lg cursor-pointer"
+          onClick={() => setIsPhotoOpen(true)}
         />
       )}
 
+      {/* Модальное окно с фото */}
+      {isPhotoOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50">
+          <img
+            src={user.photo_url}
+            alt="Фото профиля"
+            className="max-w-full max-h-full object-contain rounded-xl"
+          />
+          <button
+            className="absolute top-5 right-5 text-white text-3xl font-bold"
+            onClick={() => setIsPhotoOpen(false)}
+          >
+            &times;
+          </button>
+        </div>
+      )}
+
+      {/* Блок анкеты */}
       <div className="w-full max-w-md bg-gradient-to-br from-[#2c2c2e] to-[#1f1f20] p-6 rounded-2xl shadow-2xl space-y-3">
         <p><span className="text-zinc-400">Имя:</span> {user.name}</p>
         <p><span className="text-zinc-400">Адрес:</span> {user.address}</p>

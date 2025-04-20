@@ -181,7 +181,7 @@ const Profile = () => {
         </div>
   
         {user.status === "online" && (
-          <div>
+          <div className="mt-4">
             <label className="text-zinc-400">На сколько времени:</label>
             <select
               value={statusDuration}
@@ -192,30 +192,31 @@ const Profile = () => {
               <option value={2}>2 часа</option>
               <option value={3}>3 часа</option>
             </select>
+
             <button
               onClick={async () => {
-                const until = Date.now() + statusDuration * 60 * 60 * 1000; // например, 1 час
-                updateUser({
-                  status: 'online',
+                const until = Date.now() + statusDuration * 60 * 60 * 1000;
+
+                const updates = {
+                  status: "online",
                   online_until: until,
                   status_duration: statusDuration
-                });
+                };
 
                 await updateUser(updates);
 
-                const updatedUser = { ...user, ...updates };
-                setUser(updatedUser);
-                localStorage.setItem("user", JSON.stringify(updatedUser));
-  
                 const label = `${statusDuration} ${statusDuration === 1 ? "час" : "часа"}`;
                 setStatusMessage(`Статус подтверждён на ${label}`);
-                setTimeout(() => setStatusMessage(""), 4000);
+
+                setTimeout(() => {
+                  setStatusMessage("");
+                }, 4000);
               }}
               className="mt-3 w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:opacity-90 py-3 rounded-xl font-bold transition"
             >
               Подтвердить статус
             </button>
-  
+
             {statusMessage && (
               <p className="mt-2 text-green-400 text-sm text-center animate-pulse">
                 {statusMessage}

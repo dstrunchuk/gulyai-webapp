@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+
+const [selectedPhoto, setSelectedPhoto] = useState(null);
 
 const People = () => {
   const [people, setPeople] = useState([]);
@@ -40,12 +43,28 @@ const People = () => {
     return Math.round(R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)));
   };
 
+  {selectedPhoto && (
+    <div className="fixed inset-0 bg-black bg-opacity-90 flex flex-col justify-center items-center z-50">
+      <img
+        src={selectedPhoto}
+        alt="Фото профиля"
+        className="max-w-full max-h-[80vh] rounded-xl shadow-xl"
+      />
+      <button
+        onClick={() => setSelectedPhoto(null)}
+        className="mt-6 px-6 py-2 bg-white text-black font-semibold rounded-xl hover:bg-gray-300 transition"
+      >
+        Назад
+      </button>
+    </div>
+  )}
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
-      className="min-h-screen bg-[#1c1c1e] text-white px-4 pt-4 pb-8"
+      className="min-h-screen max-h-screen overflow-y-auto bg-[#1c1c1e] text-white px-4 pt-4 pb-8"
     >
       {/* Кнопка Назад */}
       <div className="mb-4">
@@ -86,7 +105,8 @@ const People = () => {
                 <img
                   src={person.photo_url}
                   alt="Фото"
-                  className="w-24 h-24 rounded-full object-cover border mb-4 mx-auto"
+                  onClick={() => setSelectedPhoto(person.photo_url)}
+                  className="w-24 h-24 rounded-full object-cover border mb-4 mx-auto cursor-pointer hover:scale-105 transition"
                 />
               )}
 

@@ -169,18 +169,20 @@ const Profile = () => {
   
       <div className="w-full max-w-md bg-gradient-to-br from-[#2c2c2e] to-[#1f1f20] p-6 rounded-2xl shadow-2xl space-y-4">
         <p><span className="text-zinc-400">Имя:</span> {viewedUser.name}</p>
-        <p><span className="text-zinc-400">Адрес:</span> {viewedUser.address}</p>
         <p><span className="text-zinc-400">Возраст:</span> {viewedUser.age}</p>
         <p><span className="text-zinc-400">Интересы:</span> {viewedUser.interests}</p>
   
         {!isViewingAnotherProfile ? (
           <>
-            <button
-              onClick={handleUpdateAddress}
-              className="ml-auto mb-2 px-4 py-1 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl text-sm font-medium shadow-md hover:opacity-90 transition"
-            >
-              Обновить адрес
-            </button>
+            <div className="flex items-start justify-between gap-2">
+              <p className="flex-1 break-words"><span className="text-zinc-400">Адрес:</span> {viewedUser.address}</p>
+              <button
+                onClick={handleUpdateAddress}
+                className="ml-3 px-4 py-1 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl text-sm font-medium shadow-md hover:opacity-90 transition"
+              >
+                Обновить
+              </button>
+            </div>
   
             <div>
               <label className="text-zinc-400">Цель встречи:</label>
@@ -269,6 +271,7 @@ const Profile = () => {
           </>
         ) : (
           <>
+            <p><span className="text-zinc-400">Адрес:</span> {viewedUser.address}</p>
             <p><span className="text-zinc-400">Цель встречи:</span> {viewedUser.activity}</p>
             <p><span className="text-zinc-400">Микро-настроение:</span> {viewedUser.vibe}</p>
           </>

@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 
 const People = () => {
   const [people, setPeople] = useState([]);
+  const [radius, setRadius] = useState(10000); // по умолчанию 10 км
   const [loading, setLoading] = useState(true);
   const [coords, setCoords] = useState(null);
   const [selectedPhoto, setSelectedPhoto] = useState(null);
@@ -73,6 +74,21 @@ const People = () => {
 
       <h1 className="text-2xl font-bold text-center mb-6">Кто хочет гулять</h1>
 
+      <div className="mb-6 text-center">
+        <label className="text-sm text-gray-300 mr-2">Радиус:</label>
+        <select
+          value={radius}
+          onChange={(e) => setRadius(Number(e.target.value))}
+          className="bg-zinc-800 border border-zinc-600 rounded-xl px-4 py-2 text-white"
+        >
+          <option value={500}>500 м</option>
+          <option value={1000}>1 км</option>
+          <option value={2000}>2 км</option>
+          <option value={5000}>5 км</option>
+          <option value={10000}>10 км</option>
+        </select>
+      </div>
+
       {loading && <p className="text-center text-gray-400">Загрузка...</p>}
 
       {!loading && people.length === 0 && (
@@ -80,7 +96,13 @@ const People = () => {
       )}
 
       <div className="flex flex-col gap-6">
-        {people.map((person, index) => {
+      {people
+        .filter(person => {
+          if (!coords || !person.latitude || !person.longitude) return false;
+          const dist = getDistance(coords.lat, coords.lon, person.latitude, person.longitude);
+          return dist <= radius;
+        })
+        .map((person, index) => {
           const dist =
             coords && person.latitude && person.longitude
               ? getDistance(

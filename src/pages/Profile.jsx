@@ -65,6 +65,16 @@ const Profile = () => {
     }
   }, [now, user]);
 
+  useEffect(() => {
+    if (!externalChatId || !user) return;
+    if (externalChatId === user.chat_id) return;
+  
+    fetch(`${BACKEND_URL}/api/profile/${externalChatId}`)
+      .then((res) => res.json())
+      .then(setOtherUser)
+      .catch((err) => console.error("❌ Ошибка при получении анкеты:", err));
+  }, [externalChatId, user]);
+
   const updateUser = async (updates) => {
     const updated = { ...user, ...updates };
     setUser(updated);
@@ -131,7 +141,7 @@ const Profile = () => {
     });
   };
 
-  if (!viewedUser) {
+  if (!user) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-black text-white">
         <p className="text-xl animate-pulse">Загрузка профиля...</p>
@@ -139,7 +149,7 @@ const Profile = () => {
     );
   }
 
-  if (!user) {
+  if (!viewedUser) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-black text-white">
         <p className="text-xl animate-pulse">Загрузка профиля...</p>

@@ -12,7 +12,7 @@ const Profile = () => {
   const externalChatId = queryParams.get("chat_id");
   const params = new URLSearchParams(window.location.search);
   const chatIdParam = params.get("chat_id");
-  const isViewingAnotherUser = chatIdParam && chatIdParam !== user?.chat_id;
+  const isViewingAnotherProfile = !!externalChatId && (!user || user.chat_id !== externalChatId);
   const [otherUser, setOtherUser] = useState(null);
   const viewedUser = isViewingAnotherUser ? otherUser : user;
 
@@ -130,6 +130,14 @@ const Profile = () => {
       alert("❌ Не удалось получить геолокацию.");
     });
   };
+
+  if (!viewedUser) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-black text-white">
+        <p className="text-xl animate-pulse">Загрузка профиля...</p>
+      </div>
+    );
+  }
 
   if (!user) {
     return (

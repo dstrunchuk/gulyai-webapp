@@ -40,6 +40,21 @@ const People = () => {
     return Math.round(R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)));
   };
 
+  const handleMeetRequest = (person) => {
+    const message = prompt(`Напиши сообщение для ${person.name}:`);
+    if (!message) return;
+  
+    fetch("https://gulyai-backend-production.up.railway.app/api/send-meet-request", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        to: person.chat_id,
+        from: user.chat_id,
+        message,
+      }),
+    });
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -158,9 +173,12 @@ const People = () => {
               )}
 
               <div className="mt-4 flex justify-center">
-                <button className="bg-gradient-to-r from-green-500 to-emerald-600 px-4 py-2 rounded-xl font-semibold text-black hover:opacity-90 transition">
-                  Предложить встретиться
-                </button>
+              <button
+                onClick={() => handleMeetRequest(person)}
+                className="bg-gradient-to-r from-green-500 to-emerald-600 px-4 py-2 rounded-xl font-semibold text-black hover:opacity-90 transition"
+              >
+                Предложить встретиться
+              </button>
               </div>
             </div>
           );

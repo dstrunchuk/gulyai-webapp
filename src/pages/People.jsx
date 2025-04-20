@@ -61,7 +61,7 @@ const People = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#1c1c1e] text-white px-4 py-6">
+    <div className="min-h-screen max-h-screen overflow-y-auto bg-[#1c1c1e] text-white px-4 py-6">
       <h1 className="text-2xl font-bold mb-6 text-center">Кто хочет гулять</h1>
 
       {people.length === 0 ? (
@@ -94,6 +94,8 @@ const People = () => {
                 <p className="text-lg font-bold text-center mb-1">{person.name}</p>
                 <p className="text-center text-sm text-gray-400 mb-2">{person.age} лет</p>
                 <p className="text-center text-sm text-gray-400">{person.address}</p>
+                <p><span className="text-zinc-400">Цель:</span> {user.activity}</p>
+                <p><span className="text-zinc-400">Настроение:</span> {user.vibe}</p>
                 {dist !== null && (
                   <p className="text-center text-xs text-gray-500 mt-1">{dist} метров от тебя</p>
                 )}

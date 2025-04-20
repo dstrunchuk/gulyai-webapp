@@ -62,7 +62,7 @@ const People = () => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
-      className="min-h-screen max-h-screen overflow-y-auto bg-[#1c1c1e] text-white px-4 pt-4 pb-8"
+      className="min-h-screen overflow-y-auto bg-[#1c1c1e] text-white px-4 pt-4 pb-8"
     >
       {selectedPhoto && (
         <div className="fixed inset-0 bg-black bg-opacity-90 flex flex-col justify-center items-center z-50">

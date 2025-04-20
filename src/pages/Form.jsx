@@ -194,7 +194,8 @@ const Form = () => {
             </li>
           </ul>
           <div className="text-sm text-gray-300 mt-4 bg-zinc-800 p-3 rounded-xl border border-zinc-700">
-            Анкета хранится <strong className="text-white">30 дней</strong>, потом удаляется.
+           Анкета хранится <strong className="text-white">30 дней</strong>, после чего автоматически удаляется, чтобы не перегружать сервер и базу данных.  
+           <br /> Надеемся на ваше понимание.
           </div>
           <button
             onClick={() => setStage("loading")}

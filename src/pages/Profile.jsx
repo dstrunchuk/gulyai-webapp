@@ -8,6 +8,26 @@ const Profile = () => {
   const [now, setNow] = useState(Date.now());
   const [statusMessage, setStatusMessage] = useState("");
   const navigate = useNavigate();
+  const queryParams = new URLSearchParams(window.location.search);
+  const externalChatId = queryParams.get("chat_id");
+
+  useEffect(() => {
+    const stored = localStorage.getItem("user");
+
+    // Если есть внешний chat_id — загружаем анкету этого пользователя
+    if (externalChatId) {
+      fetch(`https://gulyai-backend-production.up.railway.app/api/profile/${externalChatId}`)
+        .then(res => res.json())
+        .then(setUser)
+        .catch(err => console.error("❌ Ошибка при получении анкеты:", err));
+      return;
+    }
+
+    // Иначе загружаем свою анкету
+    if (stored) {
+      setUser(JSON.parse(stored));
+    }
+  }, []);
 
   useEffect(() => {
     document.documentElement.classList.add("dark");

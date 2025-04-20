@@ -1,21 +1,20 @@
+import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
 
 const ViewProfile = () => {
-  const { chat_id } = useParams();
-  const navigate = useNavigate();
-  const [profile, setProfile] = useState(null);
+  const { chat_id } = useParams(); // получаем chat_id
+  const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetch(`https://gulyai-backend-production.up.railway.app/api/profile/${chat_id}`)
       .then((res) => res.json())
       .then((data) => {
-        setProfile(data);
+        setUser(data);
         setLoading(false);
       })
       .catch((err) => {
-        console.error("Ошибка при загрузке анкеты:", err);
+        console.error("Ошибка при получении анкеты:", err);
         setLoading(false);
       });
   }, [chat_id]);

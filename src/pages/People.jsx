@@ -136,6 +136,11 @@ const People = () => {
               <p className="text-center text-sm text-gray-400 mb-2">
                 {person.address}
               </p>
+              {person.interests && (
+                <p className="text-center text-sm text-gray-400 mb-1">
+                  <span className="text-zinc-400">Интересы:</span> {person.interests}
+                </p>
+              )}
 
               <div className="text-center mb-4 space-y-2">
                 <div className="inline-block bg-zinc-700 px-4 py-2 rounded-xl text-sm font-medium text-white shadow-sm">

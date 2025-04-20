@@ -94,8 +94,8 @@ const People = () => {
                 <p className="text-lg font-bold text-center mb-1">{person.name}</p>
                 <p className="text-center text-sm text-gray-400 mb-2">{person.age} лет</p>
                 <p className="text-center text-sm text-gray-400">{person.address}</p>
-                <p><span className="text-zinc-400">Цель:</span> {person.activity}</p>
-                <p><span className="text-zinc-400">Настроение:</span> {person.vibe}</p>
+                <p><span className="text-zinc-400">Цель:</span> <span className="text-white">{person.activity}</span></p>
+                <p><span className="text-zinc-400">Настроение:</span> <span className="text-white">{person.vibe}</span></p>
                 {dist !== null && (
                   <p className="text-center text-xs text-gray-500 mt-1">{dist} метров от тебя</p>
                 )}

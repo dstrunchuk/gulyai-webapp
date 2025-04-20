@@ -2,6 +2,22 @@ import { useEffect, useState } from "react";
 
 const People = () => {
   const [people, setPeople] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [userCoords, setUserCoords] = useState(null);
+
+  useEffect(() => {
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setUserCoords({
+          lat: pos.coords.latitude,
+          lon: pos.coords.longitude
+        });
+      },
+      (err) => {
+        console.warn("Не удалось получить геолокацию", err);
+      }
+    );
+  }, []);
 
   useEffect(() => {
     const fetchPeople = async () => {
@@ -10,49 +26,85 @@ const People = () => {
         const data = await res.json();
         setPeople(data);
       } catch (err) {
-        console.error("Ошибка при загрузке людей:", err);
+        console.error("Ошибка загрузки", err);
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchPeople();
   }, []);
 
+  const getDistance = (lat1, lon1, lat2, lon2) => {
+    if (!lat1 || !lon1 || !lat2 || !lon2) return null;
+
+    const R = 6371e3;
+    const φ1 = lat1 * Math.PI / 180;
+    const φ2 = lat2 * Math.PI / 180;
+    const Δφ = (lat2 - lat1) * Math.PI / 180;
+    const Δλ = (lon2 - lon1) * Math.PI / 180;
+
+    const a =
+      Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+      Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+    return Math.round(R * c);
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#1c1c1e] text-white">
+        ⏳ Загрузка анкет...
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-gradient-to-b from-white to-gray-100 py-10 px-4">
-      <h1 className="text-3xl font-bold text-center text-gray-800 mb-8">Люди рядом</h1>
+    <div className="min-h-screen bg-[#1c1c1e] text-white px-4 py-6">
+      <h1 className="text-2xl font-bold mb-6 text-center">Кто хочет гулять</h1>
 
       {people.length === 0 ? (
-        <p className="text-center text-gray-500">Пока никого рядом нет...</p>
+        <p className="text-center text-gray-400">Пока никто не в онлайне...</p>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-          {people.map((user, idx) => (
-            <div
-              key={idx}
-              className="bg-white p-5 rounded-2xl shadow-lg border border-gray-200 hover:shadow-xl transition-all"
-            >
-              {user.photo_url && (
-                <img
-                  src={user.photo_url}
-                  alt="Профиль"
-                  className="w-full h-48 object-cover rounded-xl mb-4"
-                />
-              )}
-              <h2 className="text-xl font-semibold text-gray-800 mb-1">{user.name}</h2>
-              <p className="text-sm text-gray-600 mb-1">{user.address}</p>
-              <p className="text-sm text-gray-600 mb-1">Возраст: {user.age}</p>
-              <p className="text-sm text-gray-600 mb-1">Интересы: {user.interests}</p>
-              <p className="text-sm text-gray-600 mb-1">Цель: {user.activity}</p>
-              <p className="text-sm text-gray-600 mb-1">Настроение: {user.vibe}</p>
-              <a
-                href={`https://t.me/${user.username || ""}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-block mt-4 text-white bg-blue-600 hover:bg-blue-700 font-medium py-2 px-4 rounded-xl"
+        <div className="space-y-6">
+          {people.map((person) => {
+            const dist =
+              userCoords && person.latitude && person.longitude
+                ? getDistance(
+                    userCoords.lat,
+                    userCoords.lon,
+                    person.latitude,
+                    person.longitude
+                  )
+                : null;
+
+            return (
+              <div
+                key={person.chat_id}
+                className="bg-zinc-900 p-4 rounded-xl border border-zinc-700 shadow-md"
               >
-                Написать в Telegram
-              </a>
-            </div>
-          ))}
+                {person.photo_url && (
+                  <img
+                    src={person.photo_url}
+                    alt="Фото"
+                    className="w-24 h-24 rounded-full object-cover border mb-4 mx-auto"
+                  />
+                )}
+                <p className="text-lg font-bold text-center mb-1">{person.name}</p>
+                <p className="text-center text-sm text-gray-400 mb-2">{person.age} лет</p>
+                <p className="text-center text-sm text-gray-400">{person.address}</p>
+                {dist !== null && (
+                  <p className="text-center text-xs text-gray-500 mt-1">{dist} метров от тебя</p>
+                )}
+                <div className="mt-4 flex justify-center">
+                  <button className="bg-gradient-to-r from-green-500 to-emerald-600 px-4 py-2 rounded-xl font-semibold text-black hover:opacity-90 transition">
+                    Предложить встретиться
+                  </button>
+                </div>
+              </div>
+            );
+          })}
         </div>
       )}
     </div>

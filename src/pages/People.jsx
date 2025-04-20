@@ -117,15 +117,13 @@ const People = () => {
                 {person.address}
               </p>
 
-              <div className="text-center text-sm space-y-1 mb-2">
-                <p>
-                  <span className="text-zinc-400">Цель:</span>{" "}
-                  <span className="text-white">{person.activity}</span>
-                </p>
-                <p>
-                  <span className="text-zinc-400">Настроение:</span>{" "}
-                  <span className="text-white">{person.vibe}</span>
-                </p>
+              <div className="text-center mb-4 space-y-2">
+                <div className="inline-block bg-zinc-700 px-4 py-2 rounded-xl text-sm font-medium text-white shadow-sm">
+                  Цель: <span className="text-emerald-300">{person.activity}</span>
+                </div>
+                <div className="inline-block bg-zinc-700 px-4 py-2 rounded-xl text-sm font-medium text-white shadow-sm">
+                  Настроение: <span className="text-blue-300">{person.vibe}</span>
+                </div>
               </div>
 
               {dist !== null && (

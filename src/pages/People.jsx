@@ -1,13 +1,12 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-
-const [selectedPhoto, setSelectedPhoto] = useState(null);
 
 const People = () => {
   const [people, setPeople] = useState([]);
   const [loading, setLoading] = useState(true);
   const [coords, setCoords] = useState(null);
+  const [selectedPhoto, setSelectedPhoto] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -31,7 +30,7 @@ const People = () => {
 
   const getDistance = (lat1, lon1, lat2, lon2) => {
     const toRad = (deg) => (deg * Math.PI) / 180;
-    const R = 6371000; // м
+    const R = 6371000;
     const dLat = toRad(lat2 - lat1);
     const dLon = toRad(lon2 - lon1);
     const a =
@@ -42,22 +41,6 @@ const People = () => {
     return Math.round(R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)));
   };
 
-  {selectedPhoto && (
-    <div className="fixed inset-0 bg-black bg-opacity-90 flex flex-col justify-center items-center z-50">
-      <img
-        src={selectedPhoto}
-        alt="Фото профиля"
-        className="max-w-full max-h-[80vh] rounded-xl shadow-xl"
-      />
-      <button
-        onClick={() => setSelectedPhoto(null)}
-        className="mt-6 px-6 py-2 bg-white text-black font-semibold rounded-xl hover:bg-gray-300 transition"
-      >
-        Назад
-      </button>
-    </div>
-  )}
-
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -65,7 +48,22 @@ const People = () => {
       transition={{ duration: 0.4 }}
       className="min-h-screen max-h-screen overflow-y-auto bg-[#1c1c1e] text-white px-4 pt-4 pb-8"
     >
-      {/* Кнопка Назад */}
+      {selectedPhoto && (
+        <div className="fixed inset-0 bg-black bg-opacity-90 flex flex-col justify-center items-center z-50">
+          <img
+            src={selectedPhoto}
+            alt="Фото профиля"
+            className="max-w-full max-h-[80vh] rounded-xl shadow-xl"
+          />
+          <button
+            onClick={() => setSelectedPhoto(null)}
+            className="mt-6 px-6 py-2 bg-white text-black font-semibold rounded-xl hover:bg-gray-300 transition"
+          >
+            ← Назад
+          </button>
+        </div>
+      )}
+
       <div className="mb-4">
         <button
           onClick={() => navigate("/profile")}
@@ -122,11 +120,11 @@ const People = () => {
               <div className="text-center text-sm space-y-1 mb-2">
                 <p>
                   <span className="text-zinc-400">Цель:</span>{" "}
-                  {person.activity}
+                  <span className="text-white">{person.activity}</span>
                 </p>
                 <p>
                   <span className="text-zinc-400">Настроение:</span>{" "}
-                  {person.vibe}
+                  <span className="text-white">{person.vibe}</span>
                 </p>
               </div>
 

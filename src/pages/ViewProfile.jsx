@@ -1,11 +1,37 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+const [isPhotoOpen, setIsPhotoOpen] = useState(false);
 
 const BACKEND_URL = "https://gulyai-backend-production.up.railway.app";
 
 const ViewProfile = () => {
   const { chat_id } = useParams();
   const [user, setUser] = useState(null);
+
+  {viewedUser.photo_url && (
+    <img
+      src={viewedUser.photo_url}
+      alt="Фото профиля"
+      className="mb-6 w-36 h-36 object-cover rounded-full border-4 border-[#2c2c2e] shadow-lg cursor-pointer"
+      onClick={() => setIsPhotoOpen(true)}
+    />
+  )}
+
+  {isPhotoOpen && (
+    <div className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50">
+      <img
+        src={viewedUser.photo_url}
+        alt="Фото профиля"
+        className="max-w-full max-h-full object-contain rounded-xl"
+      />
+      <button
+        className="absolute top-5 right-5 text-white text-3xl font-bold"
+        onClick={() => setIsPhotoOpen(false)}
+      >
+        &times;
+      </button>
+    </div>
+  )}
 
   useEffect(() => {
     document.documentElement.classList.add("dark");

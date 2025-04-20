@@ -183,8 +183,12 @@ const Profile = () => {
             </select>
             <button
               onClick={() => {
-                const until = Date.now() + statusDuration * 60 * 60 * 1000;
-                updateUser({ online_until: until, status_duration: statusDuration });
+                const until = Date.now() + statusDuration * 60 * 60 * 1000; // например, 1 час
+                updateUser({
+                  status: 'online',
+                  online_until: until,
+                  status_duration: statusDuration
+                });
   
                 const label = `${statusDuration} ${statusDuration === 1 ? "час" : "часа"}`;
                 setStatusMessage(`Статус подтверждён на ${label}`);

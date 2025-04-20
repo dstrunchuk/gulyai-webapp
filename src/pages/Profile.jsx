@@ -175,15 +175,12 @@ const Profile = () => {
   
         {!isViewingAnotherProfile ? (
           <>
-            <div className="flex items-start justify-between gap-2">
-              <p className="flex-1 break-words"><span className="text-zinc-400">Адрес:</span> {viewedUser.address}</p>
-              <button
-                onClick={handleUpdateAddress}
-                className="ml-3 px-4 py-1 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl text-sm font-medium shadow-md hover:opacity-90 transition"
-              >
-                Обновить
-              </button>
-            </div>
+            <button
+              onClick={handleUpdateAddress}
+              className="ml-auto mb-2 px-4 py-1 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl text-sm font-medium shadow-md hover:opacity-90 transition"
+            >
+              Обновить адрес
+            </button>
   
             <div>
               <label className="text-zinc-400">Цель встречи:</label>
@@ -247,7 +244,11 @@ const Profile = () => {
                 <button
                   onClick={async () => {
                     const until = Date.now() + statusDuration * 60 * 60 * 1000;
-                    const updates = { status: "online", online_until: until, status_duration: statusDuration };
+                    const updates = {
+                      status: "online",
+                      online_until: until,
+                      status_duration: statusDuration
+                    };
                     await updateUser(updates);
                     const label = `${statusDuration} ${statusDuration === 1 ? "час" : "часа"}`;
                     setStatusMessage(`Статус подтверждён на ${label}`);

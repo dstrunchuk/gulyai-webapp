@@ -14,18 +14,16 @@ const People = () => {
     if (!stored) return navigate("/");
 
     const user = JSON.parse(stored);
-    setCoords({ lat: user.latitude, lon: user.longitude });
+    setCoords({ lat: user.latitude, lon: user.longitude }); 
 
     fetch("https://gulyai-backend-production.up.railway.app/api/people")
       .then((res) => res.json())
       .then((data) => {
-        setPeople(data);
+        // Убираем самого себя
+        const others = data.filter(p => p.chat_id !== user.chat_id);
+        setPeople(others);
         setLoading(false);
       })
-      .catch((err) => {
-        console.error("Ошибка при получении людей:", err);
-        setLoading(false);
-      });
   }, []);
 
   const getDistance = (lat1, lon1, lat2, lon2) => {

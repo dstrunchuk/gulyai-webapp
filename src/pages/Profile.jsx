@@ -193,13 +193,19 @@ const Profile = () => {
               <option value={3}>3 часа</option>
             </select>
             <button
-              onClick={() => {
+              onClick={async () => {
                 const until = Date.now() + statusDuration * 60 * 60 * 1000; // например, 1 час
                 updateUser({
                   status: 'online',
                   online_until: until,
                   status_duration: statusDuration
                 });
+
+                await updateUser(updates);
+
+                const updatedUser = { ...user, ...updates };
+                setUser(updatedUser);
+                localStorage.setItem("user", JSON.stringify(updatedUser));
   
                 const label = `${statusDuration} ${statusDuration === 1 ? "час" : "часа"}`;
                 setStatusMessage(`Статус подтверждён на ${label}`);

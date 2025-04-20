@@ -1,46 +1,30 @@
-// src/pages/ViewProfile.jsx
-import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-
-const BACKEND_URL = "https://gulyai-backend-production.up.railway.app";
+import { useEffect, useState } from "react";
 
 const ViewProfile = () => {
   const { chat_id } = useParams();
-  const [user, setUser] = useState(null);
+  const [profile, setProfile] = useState(null);
 
   useEffect(() => {
-    fetch(`${BACKEND_URL}/api/profile/${chat_id}`)
-      .then((res) => res.json())
-      .then(setUser)
-      .catch((err) => console.error("Ошибка загрузки анкеты:", err));
+    fetch(`https://gulyai-backend-production.up.railway.app/api/profile/${chat_id}`)
+      .then(res => res.json())
+      .then(setProfile)
+      .catch(err => console.error("Ошибка загрузки анкеты:", err));
   }, [chat_id]);
 
-  if (!user) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-black text-white">
-        <p className="text-xl animate-pulse">Загрузка анкеты...</p>
-      </div>
-    );
+  if (!profile) {
+    return <div className="text-white text-center mt-10">Загрузка...</div>;
   }
 
   return (
-    <div className="min-h-screen bg-[#1c1c1e] text-white px-4 py-8 flex flex-col items-center">
-      {user.photo_url && (
-        <img
-          src={user.photo_url}
-          alt="Фото профиля"
-          className="mb-6 w-36 h-36 object-cover rounded-full border-4 border-[#2c2c2e] shadow-lg"
-        />
-      )}
-
-      <div className="w-full max-w-md bg-gradient-to-br from-[#2c2c2e] to-[#1f1f20] p-6 rounded-2xl shadow-2xl space-y-2">
-        <p><span className="text-zinc-400">Имя:</span> {user.name}</p>
-        <p><span className="text-zinc-400">Адрес:</span> {user.address}</p>
-        <p><span className="text-zinc-400">Возраст:</span> {user.age}</p>
-        <p><span className="text-zinc-400">Интересы:</span> {user.interests}</p>
-        <p><span className="text-zinc-400">Цель встречи:</span> {user.activity}</p>
-        <p><span className="text-zinc-400">Настроение:</span> {user.vibe}</p>
-      </div>
+    <div className="text-white p-6">
+      <h1 className="text-xl font-bold mb-4">Анкета</h1>
+      <p><strong>Имя:</strong> {profile.name}</p>
+      <p><strong>Адрес:</strong> {profile.address}</p>
+      <p><strong>Возраст:</strong> {profile.age}</p>
+      <p><strong>Интересы:</strong> {profile.interests}</p>
+      <p><strong>Цель:</strong> {profile.activity}</p>
+      <p><strong>Настроение:</strong> {profile.vibe}</p>
     </div>
   );
 };

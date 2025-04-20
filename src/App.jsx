@@ -2,9 +2,7 @@ import { HashRouter as Router, Routes, Route } from "react-router-dom";
 import Form from "./pages/Form";
 import Profile from "./pages/Profile";
 import People from "./pages/People";
-import ViewProfile from "./pages/ViewProfile";
-
-
+import ViewProfile from "./pages/ViewProfile"; // Убедись, что этот файл есть
 
 function App() {
   return (

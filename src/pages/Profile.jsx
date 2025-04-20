@@ -176,17 +176,6 @@ const Profile = () => {
   
         {!isViewingAnotherProfile ? (
           <>
-            {/* Обновляемый адрес */}
-            <div className="flex items-start justify-between gap-2">
-              <p className="flex-1 break-words"><span className="text-zinc-400">Адрес:</span> {viewedUser.address}</p>
-              <button
-                onClick={handleUpdateAddress}
-                className="ml-3 px-4 py-1 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl text-sm font-medium shadow-md hover:opacity-90 transition"
-              >
-                Обновить
-              </button>
-            </div>
-  
             {/* Цель встречи */}
             <div>
               <label className="text-zinc-400">Цель встречи:</label>
@@ -213,6 +202,17 @@ const Profile = () => {
                 <option value="Поговорить">Поговорить</option>
                 <option value="Хочу активности">Хочу активности</option>
               </select>
+            </div>
+  
+            {/* Обновляемый адрес */}
+            <div className="flex items-start justify-between gap-2">
+              <p className="flex-1 break-words"><span className="text-zinc-400">Адрес:</span> {user.address}</p>
+              <button
+                onClick={handleUpdateAddress}
+                className="ml-3 px-4 py-1 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl text-sm font-medium shadow-md hover:opacity-90 transition"
+              >
+                Обновить
+              </button>
             </div>
   
             {/* Статус */}
@@ -288,7 +288,6 @@ const Profile = () => {
         )}
       </div>
   
-      {/* Кнопки снизу — только для своего профиля */}
       {!isViewingAnotherProfile && (
         <div className="mt-10 flex flex-col gap-4 w-full max-w-md">
           {user.status === "online" ? (

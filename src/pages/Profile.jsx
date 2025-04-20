@@ -170,7 +170,6 @@ const Profile = () => {
   
       <div className="w-full max-w-md bg-gradient-to-br from-[#2c2c2e] to-[#1f1f20] p-6 rounded-2xl shadow-2xl space-y-2">
         <p><span className="text-zinc-400">Имя:</span> {viewedUser.name}</p>
-        <p><span className="text-zinc-400">Адрес:</span> {viewedUser.address}</p>
         <p><span className="text-zinc-400">Возраст:</span> {viewedUser.age}</p>
         <p><span className="text-zinc-400">Интересы:</span> {viewedUser.interests}</p>
         <p><span className="text-zinc-400">Цель встречи:</span> {viewedUser.activity}</p>
@@ -180,7 +179,7 @@ const Profile = () => {
           <>
             <div className="flex items-start justify-between gap-2">
               <p className="flex-1 break-words">
-                <span className="text-zinc-400">Адрес:</span> {viewedUser.address}
+                <span className="text-zinc-400">Адрес:</span> {user.address}
               </p>
               <button
                 onClick={handleUpdateAddress}
@@ -193,7 +192,7 @@ const Profile = () => {
             <div>
               <label className="text-zinc-400">Цель встречи:</label>
               <select
-                value={viewedUser.activity}
+                value={user.activity}
                 onChange={(e) => updateUser({ activity: e.target.value })}
                 className="w-full mt-2 p-3 rounded-xl bg-zinc-800 border border-zinc-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
               >
@@ -206,7 +205,7 @@ const Profile = () => {
             <div>
               <label className="text-zinc-400">Микро-настроение:</label>
               <select
-                value={viewedUser.vibe}
+                value={user.vibe}
                 onChange={(e) => updateUser({ vibe: e.target.value })}
                 className="w-full mt-2 p-3 rounded-xl bg-zinc-800 border border-zinc-700 focus:outline-none focus:ring-2 focus:ring-purple-500 transition"
               >
@@ -256,12 +255,15 @@ const Profile = () => {
                 <button
                   onClick={async () => {
                     const until = Date.now() + statusDuration * 60 * 60 * 1000;
+  
                     const updates = {
                       status: "online",
                       online_until: until,
                       status_duration: statusDuration
                     };
+  
                     await updateUser(updates);
+  
                     const label = `${statusDuration} ${statusDuration === 1 ? "час" : "часа"}`;
                     setStatusMessage(`Статус подтверждён на ${label}`);
                     setTimeout(() => setStatusMessage(""), 4000);

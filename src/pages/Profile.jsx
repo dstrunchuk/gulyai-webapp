@@ -160,8 +160,19 @@ const Profile = () => {
           <label className="text-zinc-400">Статус:</label>
           <select
             value={user.status || ""}
-            onChange={(e) => updateUser({ status: e.target.value })}
-            className="w-full mt-2 p-3 rounded-xl bg-zinc-800 border border-zinc-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition"
+            onChange={(e) => {
+              const value = e.target.value;
+              if (value === "offline") {
+                updateUser({
+                  status: "offline",
+                  online_until: null,
+                  status_duration: null
+                });
+              } else {
+                updateUser({ status: value });
+              }
+            }}
+            className="w-full mt-1 p-2 rounded bg-zinc-800 border border-zinc-700"
           >
             <option value="">—</option>
             <option value="online">Иду гулять</option>

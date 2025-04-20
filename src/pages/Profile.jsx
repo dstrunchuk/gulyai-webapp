@@ -63,7 +63,7 @@ const Profile = () => {
     if (now > user.online_until && user.status === "online") {
       updateUser({ status: "offline", online_until: null });
     }
-  }, [now]);
+  }, [now, user]);
 
   const updateUser = async (updates) => {
     const updated = { ...user, ...updates };

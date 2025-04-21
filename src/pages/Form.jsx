@@ -22,9 +22,9 @@ const Form = () => {
   console.log("checkingStorage:", checkingStorage);
 
   useEffect(() => {
-    const handler = (buttonId) => {
-      console.log("popupClosed:", buttonId);
-      if (buttonId === "openSettings") {
+    const handler = (event) => {
+      console.log("popupClosed:", event);
+      if (event?.button_id === "openSettings") {
         window.open("https://t.me/settings", "_blank");
       }
     };
@@ -35,7 +35,7 @@ const Form = () => {
       window.Telegram.WebApp.offEvent("popupClosed", handler);
     };
   }, []);
-  
+
   useEffect(() => {
     if (stage === "intro" && checkingStorage) {
       console.log("На экране intro слишком долго — сбрасываем checkingStorage");

@@ -136,6 +136,15 @@ const Form = () => {
       alert("❌ Не удалось получить chat_id. Попробуй перезапустить WebApp.");
       return;
     }
+  
+    if (!latitude || !longitude) {
+      window.Telegram.WebApp.showPopup({
+        title: "Геолокация не получена",
+        message: "Чтобы другие могли видеть тебя рядом, разреши доступ к геолокации.",
+        buttons: [{ id: "ok", type: "close", text: "Понял" }]
+      });
+      return;
+    }
 
   
 

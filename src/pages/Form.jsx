@@ -20,6 +20,14 @@ const Form = () => {
 
   console.log("Текущий stage:", stage);
   console.log("checkingStorage:", checkingStorage);
+
+  useEffect(() => {
+    window.Telegram.WebApp.onEvent("popupClosed", (buttonId) => {
+      if (buttonId === "openSettings") {
+        window.open("https://t.me/settings", "_blank");
+      }
+    });
+  }, []);
   
   useEffect(() => {
     if (stage === "intro" && checkingStorage) {
@@ -119,10 +127,26 @@ const Form = () => {
   };
 
   const handleSubmit = async () => {
+    const telegramUser = window.Telegram.WebApp.initDataUnsafe.user;
+  
+    if (!telegramUser.username) {
+      window.Telegram.WebApp.showPopup({
+        title: "Username не найден",
+        message: "У тебя не указан username в Telegram. Без него другие пользователи не смогут перейти в твой профиль.",
+        buttons: [
+          { id: "openSettings", type: "default", text: "Как указать username" },
+          { id: "cancel", type: "close", text: "Позже" }
+        ]
+      });
+      return;
+    }
+  
     if (!chatId) {
       alert("❌ Не удалось получить chat_id. Попробуй перезапустить WebApp.");
       return;
     }
+
+  
 
     setSubmitting(true);
     const formData = new FormData();

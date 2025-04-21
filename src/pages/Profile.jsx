@@ -235,8 +235,8 @@ const Profile = () => {
                 className="w-full mt-1 p-2 rounded bg-zinc-800 border border-zinc-700"
               >
                 <option value="">—</option>
-                <option value="online">Иду гулять</option>
-                <option value="offline">Гуляю один(-а)</option>
+                <option value="online">Online</option>
+                <option value="offline">Offline</option>
               </select>
             </div>
   

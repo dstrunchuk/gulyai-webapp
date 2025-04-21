@@ -215,16 +215,16 @@ const Form = () => {
         className="h-screen flex flex-col justify-center items-center px-6 bg-gradient-to-b from-[#1c1c1e] to-[#2a2a2e] text-white text-center overflow-hidden"
       >
         <div className="bg-zinc-900 rounded-2xl shadow-lg p-6 max-w-md w-full space-y-4">
-            {userCount && (
-              <motion.div
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 0.5, ease: "easeOut" }}
-                className="text-center text-zinc-300 text-base sm:text-lg font-medium"
-              >
-                С нами уже <span className="text-white font-semibold">{userCount}</span> человек
-              </motion.div>
-            )}    
+          {userCount && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.5, ease: "easeOut" }}
+              className="text-center text-zinc-300 text-base sm:text-lg font-medium"
+            >
+              Уже с нами <span className="text-white font-semibold">{userCount}</span> человек
+            </motion.div>
+          )}    
           <ul className="text-base text-left space-y-2">
             <li className="flex items-center gap-2">
               <span className="text-green-400 text-lg">✓</span> Мы не публикуем анкеты

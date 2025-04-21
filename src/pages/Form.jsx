@@ -20,7 +20,16 @@ const Form = () => {
 
   console.log("Текущий stage:", stage);
   console.log("checkingStorage:", checkingStorage);
+  const [userCount, setUserCount] = useState(null);
 
+  useEffect(() => {
+    fetch("https://gulyai-backend-production.up.railway.app/api/stats")
+      .then(res => res.json())
+      .then(data => {
+        if (data.count) setUserCount(data.count);
+      })
+      .catch(err => console.error("Ошибка получения количества пользователей:", err));
+  }, []);
 
   useEffect(() => {
     if (stage === "intro" && checkingStorage) {
@@ -206,6 +215,11 @@ const Form = () => {
         className="h-screen flex flex-col justify-center items-center px-6 bg-gradient-to-b from-[#1c1c1e] to-[#2a2a2e] text-white text-center overflow-hidden"
       >
         <div className="bg-zinc-900 rounded-2xl shadow-lg p-6 max-w-md w-full space-y-4">
+          {userCount && (
+            <div className="text-center text-zinc-400 text-sm">
+              С нами уже <span className="text-white font-semibold">{userCount}</span> человек
+            </div>
+          )}
           <ul className="text-base text-left space-y-2">
             <li className="flex items-center gap-2">
               <span className="text-green-400 text-lg">✓</span> Мы не публикуем анкеты

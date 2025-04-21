@@ -217,9 +217,9 @@ const Form = () => {
         <div className="bg-zinc-900 rounded-2xl shadow-lg p-6 max-w-md w-full space-y-4">
             {userCount && (
               <motion.div
-                initial={{ opacity: 0, y: 8 }}
+                initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4, ease: "easeOut" }}
+                transition={{ duration: 0.8, delay: 0.5, ease: "easeOut" }}
                 className="text-center text-zinc-300 text-base sm:text-lg font-medium"
               >
                 С нами уже <span className="text-white font-semibold">{userCount}</span> человек

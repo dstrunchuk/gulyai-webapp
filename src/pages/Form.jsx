@@ -21,25 +21,23 @@ const Form = () => {
   console.log("Текущий stage:", stage);
   console.log("checkingStorage:", checkingStorage);
 
-  useEffect(() => {
-    const handler = (event) => {
-      console.log("popupClosed:", event);
-      if (event?.button_id === "openSettings") {
-        window.open("https://t.me/settings", "_blank");
-      }
-    };
-  
-    window.Telegram.WebApp.onEvent("popupClosed", handler);
-  
-    return () => {
-      window.Telegram.WebApp.offEvent("popupClosed", handler);
-    };
-  }, []);
 
   useEffect(() => {
     if (stage === "intro" && checkingStorage) {
       console.log("На экране intro слишком долго — сбрасываем checkingStorage");
       setCheckingStorage(false);
+    }
+
+    if (!telegramUser.username) {
+      window.Telegram.WebApp.showPopup({
+        title: "Username не найден",
+        message:
+          "Чтобы другие могли перейти в твой профиль, задай username в Telegram.\n\nОткрой Telegram → Настройки → Имя пользователя",
+        buttons: [
+          { id: "cancel", type: "close", text: "Понял" }
+        ]
+      });
+      return;
     }
   }, [stage, checkingStorage]);
 
@@ -139,10 +137,9 @@ const Form = () => {
     if (!telegramUser.username) {
       window.Telegram.WebApp.showPopup({
         title: "Username не найден",
-        message: "У тебя не указан username в Telegram. Без него другие пользователи не смогут перейти в твой профиль.",
+        message: "Чтобы другие могли перейти в твой профиль, задай username в Telegram.\n\nОткрой Telegram → Настройки → Имя пользователя",
         buttons: [
-          { id: "openSettings", type: "default", text: "Как указать username" },
-          { id: "cancel", type: "close", text: "Позже" }
+          { id: "cancel", type: "close", text: "Понял" }
         ]
       });
       return;

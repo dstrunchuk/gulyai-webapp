@@ -214,7 +214,7 @@ const Form = () => {
         transition={{ duration: 0.6 }}
         className="h-screen flex flex-col justify-center items-center px-6 bg-gradient-to-b from-[#1c1c1e] to-[#2a2a2e] text-white text-center overflow-hidden"
       >
-        <div className="bg-zinc-900 rounded-3xl shadow-2xl px-8 py-7 max-w-xl w-full space-y-6">
+        <div className="h-6 flex items-center justify-center transition-all duration-500">
           {userCount && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}

@@ -22,11 +22,18 @@ const Form = () => {
   console.log("checkingStorage:", checkingStorage);
 
   useEffect(() => {
-    window.Telegram.WebApp.onEvent("popupClosed", (buttonId) => {
+    const handler = (buttonId) => {
+      console.log("popupClosed:", buttonId);
       if (buttonId === "openSettings") {
         window.open("https://t.me/settings", "_blank");
       }
-    });
+    };
+  
+    window.Telegram.WebApp.onEvent("popupClosed", handler);
+  
+    return () => {
+      window.Telegram.WebApp.offEvent("popupClosed", handler);
+    };
   }, []);
   
   useEffect(() => {

@@ -232,7 +232,7 @@ const Form = () => {
           </button>
   
           <a
-            href="https://t.me/gulyai_support"
+            href="https://t.me/gulyai_help"
             target="_blank"
             rel="noopener noreferrer"
             className="mt-6 inline-block w-full max-w-md bg-gradient-to-r from-[#6366f1] to-[#8b5cf6] text-white text-center py-3 rounded-2xl font-semibold shadow-lg hover:opacity-90 transition"

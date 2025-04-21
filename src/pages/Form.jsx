@@ -217,16 +217,32 @@ const Form = () => {
               <span className="text-green-400 text-lg">✓</span> Ты сам(-а) выбираешь, с кем говорить
             </li>
           </ul>
+  
           <div className="text-sm text-gray-300 mt-4 bg-zinc-800 p-3 rounded-xl border border-zinc-700">
-           Анкета хранится <strong className="text-white">30 дней</strong>, после чего автоматически удаляется, чтобы не перегружать сервер и базу данных.  
-           <br /> Надеемся на ваше понимание.
+            Анкета хранится <strong className="text-white">30 дней</strong>, после чего автоматически удаляется,
+            чтобы не перегружать сервер и базу данных.  
+            <br /> Надеемся на ваше понимание.
           </div>
+  
           <button
             onClick={() => setStage("loading")}
             className="w-full mt-4 py-3 bg-gradient-to-r from-blue-500 to-purple-500 text-white font-bold rounded-xl shadow hover:opacity-90 transition"
           >
             Далее
           </button>
+  
+          <a
+            href="https://t.me/gulyai_support"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-6 inline-block w-full max-w-md bg-gradient-to-r from-[#6366f1] to-[#8b5cf6] text-white text-center py-3 rounded-2xl font-semibold shadow-lg hover:opacity-90 transition"
+          >
+            Канал поддержки Gulyai
+          </a>
+  
+          <p className="mt-2 text-sm text-zinc-400 text-center max-w-md">
+            Подпишись, чтобы быть в курсе обновлений, задать вопрос или предложить идею.
+          </p>
         </div>
       </motion.div>
     );

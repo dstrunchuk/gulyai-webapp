@@ -27,18 +27,6 @@ const Form = () => {
       console.log("На экране intro слишком долго — сбрасываем checkingStorage");
       setCheckingStorage(false);
     }
-
-    if (!telegramUser.username) {
-      window.Telegram.WebApp.showPopup({
-        title: "Username не найден",
-        message:
-          "Чтобы другие могли перейти в твой профиль, задай username в Telegram.\n\nОткрой Telegram → Настройки → Имя пользователя",
-        buttons: [
-          { id: "cancel", type: "close", text: "Понял" }
-        ]
-      });
-      return;
-    }
   }, [stage, checkingStorage]);
 
   // Получаем геолокацию
@@ -137,10 +125,9 @@ const Form = () => {
     if (!telegramUser.username) {
       window.Telegram.WebApp.showPopup({
         title: "Username не найден",
-        message: "Чтобы другие могли перейти в твой профиль, задай username в Telegram.\n\nОткрой Telegram → Настройки → Имя пользователя",
-        buttons: [
-          { id: "cancel", type: "close", text: "Понял" }
-        ]
+        message:
+          "Чтобы другие могли перейти в твой профиль, задай username в Telegram.\n\nОткрой Telegram → Настройки → Имя пользователя",
+        buttons: [{ id: "cancel", type: "close", text: "Понял" }]
       });
       return;
     }

@@ -103,6 +103,7 @@ const People = () => {
           <option value={2000}>2 км</option>
           <option value={5000}>5 км</option>
           <option value={10000}>10 км</option>
+          <option value={30000}>30 км</option>
         </select>
       </div>
 

@@ -99,19 +99,27 @@ const Form = () => {
     setTimeout(() => {
       fetch(`https://gulyai-backend-production.up.railway.app/api/profile/${id}`)
         .then((res) => {
-          if (!res.ok) throw new Error("Анкета не найдена");
+          if (res.status === 404) {
+            alert("Анкета не найдена. Возможно, вы удалили бота. Пожалуйста, заполните анкету заново.");
+            setStage("form");
+            setCheckingStorage(false);
+            return null;
+          }
+          if (!res.ok) throw new Error("Ошибка при получении анкеты");
           return res.json();
         })
         .then((profile) => {
+          if (!profile) return; // Если была 404 — ничего не делаем
           localStorage.setItem("user", JSON.stringify(profile));
           window.location.href = "/profile";
         })
         .catch((err) => {
-          console.warn("Анкета не найдена:", err.message);
+          console.warn("Ошибка при проверке анкеты:", err.message);
+          alert("Произошла ошибка. Пожалуйста, попробуйте позже.");
           setStage("form");
           setCheckingStorage(false);
         });
-    }, 1000); // даём 1 секунду геолокации и адресу
+    }, 1000);
   }, [stage]);
 
   const convertToJpeg = async (file) => {

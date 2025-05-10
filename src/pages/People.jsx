@@ -19,7 +19,7 @@ const People = () => {
     const user = JSON.parse(stored);
     setCoords({ lat: user.latitude, lon: user.longitude }); 
 
-    fetch("https://gulyai-backend-production.up.railway.app/api/people")
+    fetch(`https://gulyai-backend-production.up.railway.app/api/people?chat_id=${user.chat_id}`)
       .then((res) => res.json())
       .then((data) => {
         // Убираем самого себя

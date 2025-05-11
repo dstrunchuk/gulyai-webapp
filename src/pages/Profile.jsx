@@ -37,7 +37,7 @@ const Profile = () => {
     const stored = localStorage.getItem("user");
     const userFromStorage = stored ? JSON.parse(stored) : null;
   
-    const idToFetch = externalChatId || userFromStorage?.chat_id;
+    const idToFetch = externalChatId?.trim() ? externalChatId : userFromStorage?.chat_id;
   
     if (!idToFetch) return;
   

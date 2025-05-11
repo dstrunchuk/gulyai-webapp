@@ -22,7 +22,12 @@ const Profile = () => {
       if (isViewingAnotherProfile) {
         const res = await fetch(`${BACKEND_URL}/api/profile/${chatIdParam}`);
         const data = await res.json();
-        setOtherUser(data);
+  
+        if (data.ok && data.profile) {
+          setOtherUser(data.profile); // вот это важно
+        } else {
+          console.warn("Анкета не найдена или ошибка:", data);
+        }
       }
     };
     fetchOtherUser();

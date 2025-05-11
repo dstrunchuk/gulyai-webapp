@@ -36,19 +36,27 @@ const Profile = () => {
   useEffect(() => {
     const stored = localStorage.getItem("user");
     const userFromStorage = stored ? JSON.parse(stored) : null;
+    const idToFetch = externalChatId?.trim() || userFromStorage?.chat_id;
   
-    const idToFetch = externalChatId?.trim() ? externalChatId : userFromStorage?.chat_id;
-  
-    if (!idToFetch) return;
+    if (!idToFetch) {
+      console.warn("❌ Нет chat_id для запроса анкеты");
+      return;
+    }
   
     fetch(`https://gulyai-backend-production.up.railway.app/api/profile/${idToFetch}`)
       .then(res => res.json())
       .then((res) => {
+        console.log("✅ Получен профиль:", res);
+  
         if (res.ok && res.profile) {
-          setViewedUser(res.profile);
-          localStorage.setItem("user", JSON.stringify(res.profile));
+          if (externalChatId) {
+            setOtherUser(res.profile); // чужая анкета
+          } else {
+            setUser(res.profile); // своя анкета
+            localStorage.setItem("user", JSON.stringify(res.profile));
+          }
         } else {
-          console.warn("⚠️ Анкета не найдена или некорректный ответ:", res);
+          console.warn("⚠️ Анкета не найдена или неправильный формат ответа", res);
         }
       })
       .catch(err => console.error("❌ Ошибка при получении анкеты:", err));

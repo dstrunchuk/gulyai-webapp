@@ -40,10 +40,6 @@ const Profile = () => {
   
     const idToFetch = externalChatId?.trim() || userFromStorage?.chat_id;
   
-    console.log("➡️ LocalStorage:", userFromStorage);
-    console.log("➡️ externalChatId:", externalChatId);
-    console.log("➡️ ID для запроса анкеты:", idToFetch);
-  
     if (!idToFetch) return;
   
     fetch(`https://gulyai-backend-production.up.railway.app/api/profile/${idToFetch}`)

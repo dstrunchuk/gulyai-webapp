@@ -45,7 +45,7 @@ const Profile = () => {
       .then(res => res.json())
       .then((res) => {
         if (res.ok && res.profile) {
-          setUser(res.profile);
+          setViewedUser(res.profile);
           localStorage.setItem("user", JSON.stringify(res.profile));
         } else {
           console.warn("⚠️ Анкета не найдена или некорректный ответ:", res);

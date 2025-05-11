@@ -36,7 +36,9 @@ const Profile = () => {
   useEffect(() => {
     const stored = localStorage.getItem("user");
     const userFromStorage = stored ? JSON.parse(stored) : null;
-    const idToFetch = externalChatId?.trim() || userFromStorage?.chat_id;
+    const idToFetch = externalChatId && externalChatId.trim().length > 0
+      ? externalChatId.trim()
+      : userFromStorage?.chat_id;
   
     if (!idToFetch) {
       console.warn("❌ Нет chat_id для запроса анкеты");

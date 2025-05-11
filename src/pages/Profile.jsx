@@ -36,25 +36,25 @@ const Profile = () => {
   useEffect(() => {
     const stored = localStorage.getItem("user");
     const userFromStorage = stored ? JSON.parse(stored) : null;
-    const idToFetch = externalChatId && externalChatId.trim().length > 0
-      ? externalChatId.trim()
-      : userFromStorage?.chat_id;
+    const externalChatId = new URLSearchParams(window.location.search).get("chat_id");
   
-    if (!idToFetch) {
-      console.warn("❌ Нет chat_id для запроса анкеты");
-      return;
-    }
+    const idToFetch = externalChatId?.trim() || userFromStorage?.chat_id;
+  
+    console.log("➡️ LocalStorage:", userFromStorage);
+    console.log("➡️ externalChatId:", externalChatId);
     console.log("➡️ ID для запроса анкеты:", idToFetch);
+  
+    if (!idToFetch) return;
+  
     fetch(`https://gulyai-backend-production.up.railway.app/api/profile/${idToFetch}`)
       .then(res => res.json())
-      .then(async (res) => {
-        const json = await res.json();
-        console.log("📦 Ответ от бэка:", json);
-        if (json.ok && json.profile) {
-          setUser(json.profile);
-          localStorage.setItem("user", JSON.stringify(json.profile));
+      .then((res) => {
+        console.log("📦 Ответ от бэка:", res);
+        if (res.ok && res.profile) {
+          setUser(res.profile);
+          localStorage.setItem("user", JSON.stringify(res.profile));
         } else {
-          console.warn("⚠️ Анкета не найдена или некорректный ответ:", json);
+          console.warn("⚠️ Анкета не найдена или некорректный ответ:", res);
         }
       })
       .catch(err => console.error("❌ Ошибка при получении анкеты:", err));

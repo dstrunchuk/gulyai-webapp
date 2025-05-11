@@ -47,18 +47,14 @@ const Profile = () => {
     console.log("➡️ ID для запроса анкеты:", idToFetch);
     fetch(`https://gulyai-backend-production.up.railway.app/api/profile/${idToFetch}`)
       .then(res => res.json())
-      .then((res) => {
-        console.log("✅ Получен профиль:", res);
-  
-        if (res.ok && res.profile) {
-          if (externalChatId) {
-            setOtherUser(res.profile); // чужая анкета
-          } else {
-            setUser(res.profile); // своя анкета
-            localStorage.setItem("user", JSON.stringify(res.profile));
-          }
+      .then(async (res) => {
+        const json = await res.json();
+        console.log("📦 Ответ от бэка:", json);
+        if (json.ok && json.profile) {
+          setUser(json.profile);
+          localStorage.setItem("user", JSON.stringify(json.profile));
         } else {
-          console.warn("⚠️ Анкета не найдена или неправильный формат ответа", res);
+          console.warn("⚠️ Анкета не найдена или некорректный ответ:", json);
         }
       })
       .catch(err => console.error("❌ Ошибка при получении анкеты:", err));

@@ -44,7 +44,7 @@ const Profile = () => {
       console.warn("❌ Нет chat_id для запроса анкеты");
       return;
     }
-  
+    console.log("➡️ ID для запроса анкеты:", idToFetch);
     fetch(`https://gulyai-backend-production.up.railway.app/api/profile/${idToFetch}`)
       .then(res => res.json())
       .then((res) => {

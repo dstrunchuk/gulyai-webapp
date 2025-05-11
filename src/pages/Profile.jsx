@@ -35,7 +35,7 @@ const Profile = () => {
 
   useEffect(() => {
     const stored = localStorage.getItem("user");
-    const userFromStorage = stored ? JSON.parse(stored) : null;
+    const userFromStorage = stored ? JSON.parse(stored)?.profile : null;
     const externalChatId = new URLSearchParams(window.location.search).get("chat_id");
   
     const idToFetch = externalChatId?.trim() || userFromStorage?.chat_id;

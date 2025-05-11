@@ -260,7 +260,8 @@ const Profile = () => {
                     const updates = {
                       status: "online",
                       online_until: until,
-                      status_duration: statusDuration
+                      status_duration: statusDuration,
+                      last_online_date: new Date().toISOString().split("T")[0]
                     };
   
                     await updateUser(updates);

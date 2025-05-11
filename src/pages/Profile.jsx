@@ -35,7 +35,12 @@ const Profile = () => {
     if (externalChatId) {
       fetch(`https://gulyai-backend-production.up.railway.app/api/profile/${externalChatId}`)
         .then(res => res.json())
-        .then(setUser)
+        .then((res) => {
+          if (res.ok && res.profile) {
+            setUser(res.profile);
+            localStorage.setItem("user", JSON.stringify(res.profile));
+          }
+        })
         .catch(err => console.error("❌ Ошибка при получении анкеты:", err));
       return;
     }

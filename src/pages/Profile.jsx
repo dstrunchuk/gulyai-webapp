@@ -30,25 +30,23 @@ const Profile = () => {
 
   useEffect(() => {
     const stored = localStorage.getItem("user");
-
-    // Если есть внешний chat_id — загружаем анкету этого пользователя
-    if (externalChatId) {
-      fetch(`https://gulyai-backend-production.up.railway.app/api/profile/${externalChatId}`)
-        .then(res => res.json())
-        .then((res) => {
-          if (res.ok && res.profile) {
-            setUser(res.profile);
-            localStorage.setItem("user", JSON.stringify(res.profile));
-          }
-        })
-        .catch(err => console.error("❌ Ошибка при получении анкеты:", err));
-      return;
-    }
-
-    // Иначе загружаем свою анкету
-    if (stored) {
-      setUser(JSON.parse(stored));
-    }
+    const userFromStorage = stored ? JSON.parse(stored) : null;
+  
+    const idToFetch = externalChatId || userFromStorage?.chat_id;
+  
+    if (!idToFetch) return;
+  
+    fetch(`https://gulyai-backend-production.up.railway.app/api/profile/${idToFetch}`)
+      .then(res => res.json())
+      .then((res) => {
+        if (res.ok && res.profile) {
+          setUser(res.profile);
+          localStorage.setItem("user", JSON.stringify(res.profile));
+        } else {
+          console.warn("⚠️ Анкета не найдена или некорректный ответ:", res);
+        }
+      })
+      .catch(err => console.error("❌ Ошибка при получении анкеты:", err));
   }, []);
 
   useEffect(() => {

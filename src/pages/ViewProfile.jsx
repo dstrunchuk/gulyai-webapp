@@ -14,7 +14,7 @@ const ViewProfile = () => {
       try {
         const res = await fetch(`${BACKEND_URL}/api/profile/${chat_id}`);
         const data = await res.json();
-        setUser(data);
+        setUser(data.profile);
       } catch (err) {
         console.error("Ошибка при загрузке анкеты:", err);
       }
